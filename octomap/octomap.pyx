@@ -5,6 +5,9 @@ cimport numpy as np
 ctypedef np.float64_t DOUBLE_t
 
 cdef class OcTree:
+    """
+    octomap main map data structure, stores 3D occupancy grid map in an OcTree.
+    """
     cdef defs.OcTree *thisptr
     def __cinit__(self, arg):
         import numbers
@@ -15,8 +18,10 @@ cdef class OcTree:
     def __dealloc__(self):
         if self.thisptr:
             del self.thisptr
+    def readBinary(self, char* filename):
+        return self.thisptr.readBinary(string(filename))
     def writeBinary(self, char* filename):
-        self.thisptr.writeBinary(string(filename))
+        return self.thisptr.writeBinary(string(filename))
     def insertPointCloud(self,
                          np.ndarray[DOUBLE_t, ndim=2] pointcloud,
                          np.ndarray[DOUBLE_t, ndim=1] origin,

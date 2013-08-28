@@ -20,6 +20,7 @@ cdef extern from "OcTree.h" namespace "octomap":
     cdef cppclass OcTree:
         OcTree(double resolution) except +
         OcTree(string _filename) except +
+        bool readBinary(string filename)
         bool writeBinary(string filename)
         void insertPointCloud(Pointcloud& scan, point3d& sensor_origin,
                               double maxrange, bool lazy_eval)
