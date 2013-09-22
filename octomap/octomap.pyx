@@ -5,6 +5,27 @@ import numpy as np
 cimport numpy as np
 ctypedef np.float64_t DOUBLE_t
 
+cdef class OcTreeKey:
+    cdef defs.OcTreeKey *thisptr
+    def __cinit__(self):
+        self.thisptr = new defs.OcTreeKey()
+    def __dealloc__(self):
+        if self.thisptr:
+            del self.thisptr
+    def __setitem__(self, key, value):
+        self.thisptr[0][key] = value
+    def __getitem__(self, key):
+        return self.thisptr[0][key]
+    def __richcmp__(self, other, int op):
+        if op == 2:
+            return (self.thisptr[0][0] == other[0] and \
+                    self.thisptr[0][1] == other[1] and \
+                    self.thisptr[0][2] == other[2])
+        elif op == 3:
+            return not (self.thisptr[0][0] == other[0] and \
+                        self.thisptr[0][1] == other[1] and \
+                        self.thisptr[0][2] == other[2])
+
 cdef class tree_iterator:
     cdef defs.OcTree *treeptr
     cdef defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator *thisptr
@@ -30,6 +51,16 @@ cdef class tree_iterator:
     def getCoordinate(self):
         cdef defs.Vector3 pt = self.thisptr.getCoordinate()
         return [pt.x(), pt.y(), pt.z()]
+
+    def getDepth(self):
+        return self.thisptr.getDepth()
+
+    def getKey(self):
+        key = OcTreeKey()
+        if key.thisptr:
+            del key.thisptr
+        key.thisptr = new defs.OcTreeKey(self.thisptr.getKey())
+        return key
 
     def getSize(self):
         return self.thisptr.getSize()

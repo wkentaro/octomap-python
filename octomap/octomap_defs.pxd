@@ -23,12 +23,20 @@ cdef extern from "OcTreeNode.h" namespace "octomap":
     cdef cppclass OcTreeNode:
         OcTreeNode() except +
 
+cdef extern from "OcTreeKey.h" namespace "octomap":
+    cdef cppclass OcTreeKey:
+        OcTreeKey() except +
+        OcTreeKey(OcTreeKey& other)
+        unsigned short int& operator[](unsigned int i)
+
 cdef extern from "OccupancyOcTreeBase.h" namespace "octomap":
     cdef cppclass OccupancyOcTreeBase[T]:
         cppclass tree_iterator:
             tree_iterator() except +
             tree_iterator(tree_iterator&) except +
             point3d getCoordinate()
+            unsigned int getDepth()
+            OcTreeKey& getKey()
             tree_iterator& operator++()
             bool operator==(tree_iterator &other)
             bool operator!=(tree_iterator &other)
