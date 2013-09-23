@@ -22,6 +22,8 @@ cdef extern from "Pointcloud.h" namespace "octomap":
 cdef extern from "OcTreeNode.h" namespace "octomap":
     cdef cppclass OcTreeNode:
         OcTreeNode() except +
+        float getValue()
+        double getOccupancy()
 
 cdef extern from "OcTreeKey.h" namespace "octomap":
     cdef cppclass OcTreeKey:
@@ -38,6 +40,7 @@ cdef extern from "OccupancyOcTreeBase.h" namespace "octomap":
             unsigned int getDepth()
             OcTreeKey& getKey()
             tree_iterator& operator++()
+            OcTreeNode& operator*()
             bool operator==(tree_iterator &other)
             bool operator!=(tree_iterator &other)
             bool isLeaf() except +
@@ -49,6 +52,8 @@ cdef extern from "OccupancyOcTreeBase.h" namespace "octomap":
         OccupancyOcTreeBase(string _filename) except +
         bool readBinary(string& filename)
         bool writeBinary(string& filename)
+        bool isNodeOccupied(OcTreeNode& occupancyNode)
+        bool isNodeAtThreshold(OcTreeNode& occupancyNode)
         void insertPointCloud(Pointcloud& scan, point3d& sensor_origin,
                               double maxrange, bool lazy_eval)
         OccupancyOcTreeBase[OcTreeNode].tree_iterator begin_tree(unsigned char maxDepth) except +
@@ -60,6 +65,8 @@ cdef extern from "OcTree.h" namespace "octomap":
         OcTree(string _filename) except +
         bool readBinary(string& filename)
         bool writeBinary(string& filename)
+        bool isNodeOccupied(OcTreeNode& occupancyNode)
+        bool isNodeAtThreshold(OcTreeNode& occupancyNode)
         void insertPointCloud(Pointcloud& scan, point3d& sensor_origin,
                               double maxrange, bool lazy_eval)
         OccupancyOcTreeBase[OcTreeNode].tree_iterator begin_tree(unsigned char maxDepth) except +

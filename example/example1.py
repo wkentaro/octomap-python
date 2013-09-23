@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# coding: utf8
 import numpy
 import octomap
 
@@ -12,4 +14,3 @@ if __name__ == "__main__":
         print "Create octree file."
     else:
         print "Cannot create octree file."
-

@@ -1,5 +1,5 @@
 from libcpp.string cimport string
-from cython.operator cimport dereference as deref, preincrement as inc
+from cython.operator cimport dereference as deref, preincrement as inc, address
 cimport octomap_defs as defs
 import numpy as np
 cimport numpy as np
@@ -72,6 +72,11 @@ cdef class tree_iterator:
     def getZ(self):
         return self.thisptr.getZ()
 
+    def getOccupancy(self):
+        return (<defs.OcTreeNode>deref(deref(self.thisptr))).getOccupancy()
+
+    def getValue(self):
+        return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
 
 cdef class OcTree:
     """
@@ -94,6 +99,12 @@ cdef class OcTree:
 
     def writeBinary(self, char* filename):
         return self.thisptr.writeBinary(string(filename))
+
+    def isNodeOccupied(self, tree_iterator itr):
+        return self.thisptr.isNodeOccupied(<defs.OcTreeNode>deref(deref(itr.thisptr)))
+
+    def isNodeAtThreshold(self, tree_iterator itr):
+        return self.thisptr.isNodeAtThreshold(<defs.OcTreeNode>deref(deref(itr.thisptr)))
 
     def insertPointCloud(self,
                          np.ndarray[DOUBLE_t, ndim=2] pointcloud,

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# coding: utf8
 import numpy
 import octomap
 
@@ -16,5 +18,8 @@ if __name__ == "__main__":
         key = i.getKey()
         print "Key: ", key[0], key[1], key[2]
         print "IsLeaf: ", i.isLeaf()
+        print "Value: ", i.getValue()
+        print "Occupancy: ", i.getOccupancy()
+        print "Occupied:", tree.isNodeOccupied(i)
+        print "AtThreshold:", tree.isNodeAtThreshold(i)
     print "End Iteration."
-    #print tree.end_tree().isLeaf()
