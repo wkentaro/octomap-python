@@ -4,6 +4,7 @@ from Cython.Distutils import build_ext
 
 setup(
     name="octomap",
+    version="0.1",
     packages=["octomap"],
     ext_modules=[Extension(
         "octomap",
