@@ -19,3 +19,15 @@ Install
 You can install python-octomap using the normal distutils install command:
 
     $ python setup.py install
+
+
+View octomap
+------------
+You can also show octomap using "example/octomap_viewer.py".
+This viewer needs "mayavi".
+
+    $ python example1.py # Create octomap file, "test.bt"
+
+    $ python octomap_viewer.py -f test.bt -s
+
+.. image:: example/image.png
