@@ -68,9 +68,9 @@ cdef class tree_iterator:
     def getKey(self):
         if self.thisptr:
             key = OcTreeKey()
-            if key.thisptr:
-                del key.thisptr
-            key.thisptr = new defs.OcTreeKey(self.thisptr.getKey()) 
+            key.thisptr[0][0] = self.thisptr.getKey()[0]
+            key.thisptr[0][1] = self.thisptr.getKey()[1]
+            key.thisptr[0][2] = self.thisptr.getKey()[2]
             return key
 
     def getSize(self):
