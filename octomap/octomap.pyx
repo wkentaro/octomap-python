@@ -1,4 +1,5 @@
 from libcpp.string cimport string
+from libc.string cimport memcpy
 from cython.operator cimport dereference as deref, preincrement as inc, address
 cimport octomap_defs as defs
 import numpy as np
@@ -37,46 +38,62 @@ cdef class tree_iterator:
             del self.thisptr
 
     def next(self):
-        inc(deref(self.thisptr))
-        return self
+        if self.thisptr:
+            inc(deref(self.thisptr))
+            return self
 
     def __iter__(self):
-        while deref(self.thisptr) != self.treeptr.end_tree():
-            yield self
-            inc(deref(self.thisptr))
+        if self.thisptr and self.treeptr:
+            while deref(self.thisptr) != self.treeptr.end_tree():
+                yield self
+                if self.thisptr:
+                    inc(deref(self.thisptr))
+                else:
+                    break
 
     def isLeaf(self):
-        return self.thisptr.isLeaf()
+        if self.thisptr:
+            return self.thisptr.isLeaf()
 
     def getCoordinate(self):
-        cdef defs.Vector3 pt = self.thisptr.getCoordinate()
-        return [pt.x(), pt.y(), pt.z()]
+        cdef defs.Vector3 pt
+        if self.thisptr:
+            pt = self.thisptr.getCoordinate()
+            return [pt.x(), pt.y(), pt.z()]
 
     def getDepth(self):
-        return self.thisptr.getDepth()
+        if self.thisptr:
+            return self.thisptr.getDepth()
 
     def getKey(self):
-        key = OcTreeKey()
-        if key.thisptr:
-            del key.thisptr
-        key.thisptr = new defs.OcTreeKey(self.thisptr.getKey())
-        return key
+        if self.thisptr:
+            key = OcTreeKey()
+            if key.thisptr:
+                del key.thisptr
+            key.thisptr = new defs.OcTreeKey(self.thisptr.getKey()) 
+            return key
 
     def getSize(self):
-        return self.thisptr.getSize()
+        if self.thisptr:
+            return self.thisptr.getSize()
 
     def getX(self):
-        return self.thisptr.getX()
+        if self.thisptr:
+            return self.thisptr.getX()
     def getY(self):
-        return self.thisptr.getY()
+        if self.thisptr:
+            return self.thisptr.getY()
     def getZ(self):
-        return self.thisptr.getZ()
+        if self.thisptr:
+            return self.thisptr.getZ()
 
     def getOccupancy(self):
-        return (<defs.OcTreeNode>deref(deref(self.thisptr))).getOccupancy()
+        if self.thisptr:
+            return (<defs.OcTreeNode>deref(deref(self.thisptr))).getOccupancy()
 
     def getValue(self):
-        return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
+        if self.thisptr:
+            return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
 
 cdef class OcTree:
     """
@@ -86,7 +103,7 @@ cdef class OcTree:
     def __cinit__(self, arg):
         import numbers
         if isinstance(arg, numbers.Number):
-            self.thisptr = new defs.OcTree(<double>arg)
+            self.thisptr = new defs.OcTree(<double?>arg)
         else:
             self.thisptr = new defs.OcTree(string(<char*>arg))
 
@@ -111,6 +128,18 @@ cdef class OcTree:
                          np.ndarray[DOUBLE_t, ndim=1] origin,
                          maxrange=-1.,
                          lazy_eval=False):
+        """
+        Integrate a Pointcloud (in global reference frame), parallelized with OpenMP.
+
+        Special care is taken that each voxel in the map is updated only once, and occupied
+        nodes have a preference over free ones. This avoids holes in the floor from mutual
+        deletion.
+        :param pointcloud: Pointcloud (measurement endpoints), in global reference frame
+        :param origin: measurement origin in global reference frame
+        :param maxrange: maximum range for how long individual beams are inserted (default -1: complete beam)
+        :param : whether update of inner nodes is omitted after the update (default: false).
+        This speeds up the insertion, but you need to call updateInnerOccupancy() when done.
+        """
         cdef defs.Pointcloud pc = defs.Pointcloud()
         for n in range(pointcloud.shape[0]):
             pc.push_back(<float>pointcloud[n, 0],
@@ -121,7 +150,7 @@ cdef class OcTree:
                                       defs.Vector3(<float>origin[0],
                                                    <float>origin[1],
                                                    <float>origin[2]),
-                                      <double>maxrange,
+                                      <double?>maxrange,
                                       bool(lazy_eval))
 
     def begin_tree(self, maxDepth=0):
