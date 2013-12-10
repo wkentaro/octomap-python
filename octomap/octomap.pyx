@@ -157,7 +157,9 @@ cdef class OcTree:
         self.thisptr.clear()
 
     def coordToKey(self, np.ndarray[DOUBLE_t, ndim=1] coord):
-        cdef defs.OcTreeKey key = self.thisptr.coordToKey(defs.point3d(coord[0], coord[1], coord[2]))
+        cdef defs.OcTreeKey key = self.thisptr.coordToKey(defs.point3d(coord[0],
+                                                                       coord[1],
+                                                                       coord[2]))
         res = OcTreeKey()
         res[0] = key[0]
         res[1] = key[1]
@@ -165,7 +167,27 @@ cdef class OcTree:
         return res
 
     def deleteNode(self, np.ndarray[DOUBLE_t, ndim=1] value, depth=1):
-        return self.thisptr.deleteNode(defs.point3d(value[0], value[1], value[2]), <int?>depth)
+        return self.thisptr.deleteNode(defs.point3d(value[0],
+                                                    value[1],
+                                                    value[2]),
+                                       <int?>depth)
+
+    def castRay(self, np.ndarray[DOUBLE_t, ndim=1] origin,
+                np.ndarray[DOUBLE_t, ndim=1] direction,
+                np.ndarray[DOUBLE_t, ndim=1] end,
+                ignoreUnknownCells=False,
+                maxRange=-1.0):
+        """
+        A ray is cast from origin with a given direction,
+        the first occupied cell is returned (as center coordinate).
+        If the starting coordinate is already occupied in the tree,
+        this coordinate will be returned as a hit.
+        """
+        return self.thisptr.castRay(defs.point3d(origin[0], origin[1], origin[2]),
+                                    defs.point3d(direction[0], direction[1], direction[2]),
+                                    defs.point3d(end[0], end[1], end[2]),
+                                    bool(ignoreUnknownCells),
+                                    <double?>maxRange)
 
     def readBinary(self, char* filename):
         return self.thisptr.readBinary(string(filename))

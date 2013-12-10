@@ -71,7 +71,8 @@ cdef extern from "octomap/OcTree.h" namespace "octomap":
         void clear()
         OcTreeKey coordToKey(point3d& coord)
         bool deleteNode(point3d& value, unsigned int depth)
-        bool castRay(point3d& origin, point3d& direction, point3d& end, bool ignoreUnknownCells, double maxRange)
+        bool castRay(point3d& origin, point3d& direction, point3d& end,
+                     bool ignoreUnknownCells, double maxRange)
         bool readBinary(string& filename)
         bool writeBinary(string& filename)
         bool isNodeOccupied(OcTreeNode& occupancyNode)
