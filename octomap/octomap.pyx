@@ -264,17 +264,60 @@ cdef class OcTree:
             p = self.thisptr.keyToCoord(key_in, <int?>depth)
         return np.array((p.x(), p.y(), p.z()))
 
+    def memoryFullGrid(self):
+        return self.thisptr.memoryFullGrid()
+
+    def memoryUsage(self):
+        return self.thisptr.memoryUsage()
+
+    def memoryUsageNode(self):
+        return self.thisptr.memoryUsageNode()
+
+    def resetChangeDetection(self):
+        """
+        Reset the set of changed keys. Call this after you obtained all changed nodes.
+        """
+        self.thisptr.resetChangeDetection()
+
     def setBBXMax(self, np.ndarray[DOUBLE_t, ndim=1] max):
+        """
+        sets the maximum for a query bounding box to use
+        """
         self.thisptr.setBBXMax(defs.point3d(max[0], max[1], max[2]))
 
     def setBBXMin(self, np.ndarray[DOUBLE_t, ndim=1] min):
+        """
+        sets the minimum for a query bounding box to use
+        """
         self.thisptr.setBBXMin(defs.point3d(min[0], min[1], min[2]))
 
     def setResolution(self, double r):
+        """
+        Change the resolution of the octree, scaling all voxels. This will not preserve the (metric) scale!
+        """
         self.thisptr.setResolution(r)
 
     def size(self):
         return self.thisptr.size()
+
+    def toMaxLikelihood(self):
+        """
+        Creates the maximum likelihood map by calling toMaxLikelihood on all tree nodes,
+        setting their occupancy to the corresponding occupancy thresholds.
+        """
+        self.thisptr.toMaxLikelihood()
+
+    def updateInnerOccupancy(self):
+        """
+        Updates the occupancy of all inner nodes to reflect their children's occupancy.
+        """
+        self.thisptr.updateInnerOccupancy()
+
+    def useBBXLimit(self, enable):
+        """
+        use or ignore BBX limit (default: ignore)
+        """
+        self.thisptr.useBBXLimit(bool(enable))
 
     def volume(self):
         return self.thisptr.volume()
