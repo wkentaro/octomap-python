@@ -25,9 +25,11 @@ class OctomapViewer:
                         fp.append(i.getCoordinate())
         op = zip(*op)
         fp = zip(*fp)
-        points3d(op[0], op[1], op[2], so, opacity=1.0, mode='cube', color=(0, 0, 1), scale_mode='none', scale_factor=0.1)
+        points3d(op[0], op[1], op[2], so, opacity=1.0, mode='cube',
+                 color=(0, 0, 1), scale_mode='none', scale_factor=0.1)
         if self.view_free:
-            points3d(fp[0], fp[1], fp[2], sf, opacity=0.3, mode='cube', color=(0, 1, 0), scale_mode='none', scale_factor=0.1)
+            points3d(fp[0], fp[1], fp[2], sf, opacity=0.3, mode='cube',
+                     color=(0, 1, 0), scale_mode='none', scale_factor=0.1)
         show()
 
 if __name__ == "__main__":

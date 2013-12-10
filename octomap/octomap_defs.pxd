@@ -38,6 +38,7 @@ cdef extern from "octomap/OccupancyOcTreeBase.h" namespace "octomap":
             tree_iterator(tree_iterator&) except +
             point3d getCoordinate()
             unsigned int getDepth()
+            OcTreeKey getIndexKey()
             OcTreeKey& getKey()
             tree_iterator& operator++()
             OcTreeNode& operator*()
@@ -63,6 +64,14 @@ cdef extern from "octomap/OcTree.h" namespace "octomap":
     cdef cppclass OcTree:
         OcTree(double resolution) except +
         OcTree(string _filename) except +
+        OcTreeKey adjustKeyAtDepth(OcTreeKey& key, unsigned int depth)
+        unsigned short int adjustKeyAtDepth(unsigned short int key, unsigned int depth)
+        bool bbxSet()
+        size_t calcNumNodes()
+        void clear()
+        OcTreeKey coordToKey(point3d& coord)
+        bool deleteNode(point3d& value, unsigned int depth)
+        bool castRay(point3d& origin, point3d& direction, point3d& end, bool ignoreUnknownCells, double maxRange)
         bool readBinary(string& filename)
         bool writeBinary(string& filename)
         bool isNodeOccupied(OcTreeNode& occupancyNode)
@@ -71,3 +80,19 @@ cdef extern from "octomap/OcTree.h" namespace "octomap":
                               double maxrange, bool lazy_eval)
         OccupancyOcTreeBase[OcTreeNode].tree_iterator begin_tree(unsigned char maxDepth) except +
         OccupancyOcTreeBase[OcTreeNode].tree_iterator end_tree() except +
+        point3d getBBXBounds()
+        point3d getBBXCenter()
+        point3d getBBXMax()
+        point3d getBBXMin()
+        size_t getNumLeafNodes()
+        double getResolution()
+        unsigned int getTreeDepth()
+        string getTreeType()
+        bool inBBX(point3d& p)
+        point3d keyToCoord(OcTreeKey& key)
+        point3d keyToCoord(OcTreeKey& key, unsigned int depth)
+        void setBBXMax(point3d& max)
+        void setBBXMin(point3d& min)
+        void setResolution(double r)
+        size_t size()
+        double volume()

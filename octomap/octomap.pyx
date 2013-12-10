@@ -7,6 +7,10 @@ cimport numpy as np
 ctypedef np.float64_t DOUBLE_t
 
 cdef class OcTreeKey:
+    """
+    OcTreeKey is a container class for internal key addressing.
+    The keys count the number of cells (voxels) from the origin as discrete address of a voxel.
+    """
     cdef defs.OcTreeKey *thisptr
     def __cinit__(self):
         self.thisptr = new defs.OcTreeKey()
@@ -28,6 +32,9 @@ cdef class OcTreeKey:
                         self.thisptr[0][2] == other[2])
 
 cdef class tree_iterator:
+    """
+    Iterator over the complete tree (inner nodes and leafs).
+    """
     cdef defs.OcTree *treeptr
     cdef defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator *thisptr
     def __cinit__(self):
@@ -56,21 +63,38 @@ cdef class tree_iterator:
             return self.thisptr.isLeaf()
 
     def getCoordinate(self):
+        """
+        return the center coordinate of the current node
+        """
         cdef defs.Vector3 pt
         if self.thisptr:
             pt = self.thisptr.getCoordinate()
-            return [pt.x(), pt.y(), pt.z()]
+            return np.array((pt.x(), pt.y(), pt.z()))
 
     def getDepth(self):
         if self.thisptr:
             return self.thisptr.getDepth()
 
     def getKey(self):
+        """
+        the OcTreeKey of the current node
+        """
         if self.thisptr:
             key = OcTreeKey()
             key.thisptr[0][0] = self.thisptr.getKey()[0]
             key.thisptr[0][1] = self.thisptr.getKey()[1]
             key.thisptr[0][2] = self.thisptr.getKey()[2]
+            return key
+
+    def getIndexKey(self):
+        """
+        the OcTreeKey of the current node, for nodes with depth != maxDepth
+        """
+        if self.thisptr:
+            key = OcTreeKey()
+            key.thisptr[0][0] = self.thisptr.getIndexKey()[0]
+            key.thisptr[0][1] = self.thisptr.getIndexKey()[1]
+            key.thisptr[0][2] = self.thisptr.getIndexKey()[2]
             return key
 
     def getSize(self):
@@ -110,6 +134,38 @@ cdef class OcTree:
     def __dealloc__(self):
         if self.thisptr:
             del self.thisptr
+
+    def adjustKeyAtDepth(self, OcTreeKey key, depth):
+        cdef defs.OcTreeKey key_in = defs.OcTreeKey()
+        key_in[0] = key[0]
+        key_in[1] = key[1]
+        key_in[2] = key[2]
+        cdef defs.OcTreeKey key_out = self.thisptr.adjustKeyAtDepth(key_in, <int?>depth)
+        res = OcTreeKey
+        res[0] = key_out[0]
+        res[1] = key_out[1]
+        res[2] = key_out[2]
+        return res
+
+    def bbxSet(self):
+        return self.thisptr.bbxSet()
+
+    def calcNumNodes(self):
+        return self.thisptr.calcNumNodes()
+
+    def clear(self):
+        self.thisptr.clear()
+
+    def coordToKey(self, np.ndarray[DOUBLE_t, ndim=1] coord):
+        cdef defs.OcTreeKey key = self.thisptr.coordToKey(defs.point3d(coord[0], coord[1], coord[2]))
+        res = OcTreeKey()
+        res[0] = key[0]
+        res[1] = key[1]
+        res[2] = key[2]
+        return res
+
+    def deleteNode(self, np.ndarray[DOUBLE_t, ndim=1] value, depth=1):
+        return self.thisptr.deleteNode(defs.point3d(value[0], value[1], value[2]), <int?>depth)
 
     def readBinary(self, char* filename):
         return self.thisptr.readBinary(string(filename))
@@ -164,3 +220,62 @@ cdef class OcTree:
         itr.thisptr = new defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator(self.thisptr.end_tree())
         itr.treeptr = self.thisptr
         return itr
+
+    def getBBXBounds(self):
+        cdef defs.point3d p = self.thisptr.getBBXBounds()
+        return np.array((p.x(), p.y(), p.z()))
+
+    def getBBXCenter(self):
+        cdef defs.point3d p = self.thisptr.getBBXCenter()
+        return np.array((p.x(), p.y(), p.z()))
+
+    def getBBXMax(self):
+        cdef defs.point3d p = self.thisptr.getBBXMax()
+        return np.array((p.x(), p.y(), p.z()))
+
+    def getBBXMin(self):
+        cdef defs.point3d p = self.thisptr.getBBXMin()
+        return np.array((p.x(), p.y(), p.z()))
+
+    def getNumLeafNodes(self):
+        return self.thisptr.getNumLeafNodes()
+
+    def getResolution(self):
+        return self.thisptr.getResolution()
+
+    def getTreeDepth(self):
+        return self.thisptr.getTreeDepth()
+
+    def getTreeType(self):
+        return self.thisptr.getTreeType().c_str()
+
+    def inBBX(self, np.ndarray[DOUBLE_t, ndim=1] p):
+        return self.thisptr.inBBX(defs.point3d(p[0], p[1], p[2]))
+
+    def keyToCoord(self, OcTreeKey key, depth=None):
+        cdef defs.OcTreeKey key_in = defs.OcTreeKey()
+        cdef defs.point3d p = defs.point3d()
+        key_in[0] = key[0]
+        key_in[1] = key[1]
+        key_in[2] = key[2]
+        if depth is None:
+            p = self.thisptr.keyToCoord(key_in)
+        else:
+            p = self.thisptr.keyToCoord(key_in, <int?>depth)
+        return np.array((p.x(), p.y(), p.z()))
+
+    def setBBXMax(self, np.ndarray[DOUBLE_t, ndim=1] max):
+        self.thisptr.setBBXMax(defs.point3d(max[0], max[1], max[2]))
+
+    def setBBXMin(self, np.ndarray[DOUBLE_t, ndim=1] min):
+        self.thisptr.setBBXMin(defs.point3d(min[0], min[1], min[2]))
+
+    def setResolution(self, double r):
+        self.thisptr.setResolution(r)
+
+    def size(self):
+        return self.thisptr.size()
+
+    def volume(self):
+        return self.thisptr.volume()
+
