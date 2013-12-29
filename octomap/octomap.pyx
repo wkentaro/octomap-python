@@ -38,6 +38,9 @@ cdef class OcTreeNode:
     def __dealloc__(self):
         if self.thisptr:
             del self.thisptr
+    def addValue(self, float p):
+        self.thisptr.addValue(p)
+
     def getOccupancy(self):
         return self.thisptr.getOccupancy()
 
@@ -312,6 +315,12 @@ cdef class OcTree:
         Reset the set of changed keys. Call this after you obtained all changed nodes.
         """
         self.thisptr.resetChangeDetection()
+
+    def search(self, np.ndarray[DOUBLE_t, ndim=1] value, depth=0):
+        node = OcTreeNode()
+        node.thisptr[0] = self.thisptr.search(defs.point3d(value[0], value[1], value[2]),
+                                              <unsigned int?>depth)[0]
+        return node
 
     def setBBXMax(self, np.ndarray[DOUBLE_t, ndim=1] max):
         """
