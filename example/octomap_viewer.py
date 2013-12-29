@@ -16,7 +16,7 @@ class OctomapViewer:
         sf = []
         for i in itr:
             if i.isLeaf():
-                if self.tree.isNodeOccupied(i):
+                if self.tree.isNodeOccupied(i.node):
                     so.append(i.getSize())
                     op.append(i.getCoordinate())
                 else:

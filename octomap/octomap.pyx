@@ -207,11 +207,11 @@ cdef class OcTree:
     def writeBinary(self, char* filename):
         return self.thisptr.writeBinary(string(filename))
 
-    def isNodeOccupied(self, tree_iterator itr):
-        return self.thisptr.isNodeOccupied(<defs.OcTreeNode>deref(deref(itr.thisptr)))
+    def isNodeOccupied(self, OcTreeNode node):
+        return self.thisptr.isNodeOccupied(deref(node.thisptr))
 
-    def isNodeAtThreshold(self, tree_iterator itr):
-        return self.thisptr.isNodeAtThreshold(<defs.OcTreeNode>deref(deref(itr.thisptr)))
+    def isNodeAtThreshold(self, OcTreeNode node):
+        return self.thisptr.isNodeAtThreshold(deref(node.thisptr))
 
     def insertPointCloud(self,
                          np.ndarray[DOUBLE_t, ndim=2] pointcloud,
