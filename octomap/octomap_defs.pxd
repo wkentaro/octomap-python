@@ -49,16 +49,6 @@ cdef extern from "octomap/OccupancyOcTreeBase.h" namespace "octomap":
             double getX() except +
             double getY() except +
             double getZ() except +
-        OccupancyOcTreeBase(double resolution) except +
-        OccupancyOcTreeBase(string _filename) except +
-        bool readBinary(string& filename)
-        bool writeBinary(string& filename)
-        bool isNodeOccupied(OcTreeNode& occupancyNode)
-        bool isNodeAtThreshold(OcTreeNode& occupancyNode)
-        void insertPointCloud(Pointcloud& scan, point3d& sensor_origin,
-                              double maxrange, bool lazy_eval)
-        OccupancyOcTreeBase[OcTreeNode].tree_iterator begin_tree(unsigned char maxDepth) except +
-        OccupancyOcTreeBase[OcTreeNode].tree_iterator end_tree() except +
 
 cdef extern from "octomap/OcTree.h" namespace "octomap":
     cdef cppclass OcTree:

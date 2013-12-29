@@ -31,12 +31,27 @@ cdef class OcTreeKey:
                         self.thisptr[0][1] == other[1] and \
                         self.thisptr[0][2] == other[2])
 
+cdef class OcTreeNode:
+    cdef defs.OcTreeNode *thisptr
+    def __cinit__(self):
+        self.thisptr = new defs.OcTreeNode()
+    def __dealloc__(self):
+        if self.thisptr:
+            del self.thisptr
+    def getOccupancy(self):
+        return self.thisptr.getOccupancy()
+
+    def getValue(self):
+        return self.thisptr.getValue()
+
+
 cdef class tree_iterator:
     """
     Iterator over the complete tree (inner nodes and leafs).
     """
     cdef defs.OcTree *treeptr
     cdef defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator *thisptr
+    node = OcTreeNode()
     def __cinit__(self):
         pass
 
@@ -46,12 +61,17 @@ cdef class tree_iterator:
 
     def next(self):
         if self.thisptr:
-            inc(deref(self.thisptr))
-            return self
+            if deref(self.thisptr) != self.treeptr.end_tree():
+                inc(deref(self.thisptr))
+                (<OcTreeNode>self.node).thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
+                return self
+            else:
+                raise StopIteration
 
     def __iter__(self):
         if self.thisptr and self.treeptr:
             while deref(self.thisptr) != self.treeptr.end_tree():
+                (<OcTreeNode>self.node).thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
                 yield self
                 if self.thisptr:
                     inc(deref(self.thisptr))
@@ -110,14 +130,6 @@ cdef class tree_iterator:
     def getZ(self):
         if self.thisptr:
             return self.thisptr.getZ()
-
-    def getOccupancy(self):
-        if self.thisptr:
-            return (<defs.OcTreeNode>deref(deref(self.thisptr))).getOccupancy()
-
-    def getValue(self):
-        if self.thisptr:
-            return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
 
 cdef class OcTree:
     """
@@ -219,10 +231,10 @@ cdef class OcTree:
         This speeds up the insertion, but you need to call updateInnerOccupancy() when done.
         """
         cdef defs.Pointcloud pc = defs.Pointcloud()
-        for n in range(pointcloud.shape[0]):
-            pc.push_back(<float>pointcloud[n, 0],
-                         <float>pointcloud[n, 1],
-                         <float>pointcloud[n, 2])
+        for p in pointcloud:
+            pc.push_back(<float>p[0],
+                         <float>p[1],
+                         <float>p[2])
 
         self.thisptr.insertPointCloud(pc,
                                       defs.Vector3(<float>origin[0],
