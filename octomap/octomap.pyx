@@ -6,6 +6,13 @@ import numpy as np
 cimport numpy as np
 ctypedef np.float64_t DOUBLE_t
 
+class NullPointerException(Exception):
+    """
+    Null pointer 例外
+    """
+    def __init__(self):
+        pass
+
 cdef class OcTreeKey:
     """
     OcTreeKey is a container class for internal key addressing.
@@ -54,7 +61,7 @@ cdef class tree_iterator:
     """
     cdef defs.OcTree *treeptr
     cdef defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator *thisptr
-    node = OcTreeNode()
+    cdef OcTreeNode node
     def __cinit__(self):
         pass
 
@@ -66,24 +73,30 @@ cdef class tree_iterator:
         if self.thisptr:
             if deref(self.thisptr) != self.treeptr.end_tree():
                 inc(deref(self.thisptr))
-                (<OcTreeNode>self.node).thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
+                self.node.thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
                 return self
             else:
                 raise StopIteration
+        else:
+            raise NullPointerException
 
     def __iter__(self):
         if self.thisptr and self.treeptr:
             while deref(self.thisptr) != self.treeptr.end_tree():
-                (<OcTreeNode>self.node).thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
+                self.node.thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
                 yield self
                 if self.thisptr:
                     inc(deref(self.thisptr))
                 else:
                     break
+        else:
+            raise NullPointerException
 
     def isLeaf(self):
         if self.thisptr:
             return self.thisptr.isLeaf()
+        else:
+            raise NullPointerException
 
     def getCoordinate(self):
         """
@@ -93,10 +106,14 @@ cdef class tree_iterator:
         if self.thisptr:
             pt = self.thisptr.getCoordinate()
             return np.array((pt.x(), pt.y(), pt.z()))
+        else:
+            raise NullPointerException
 
     def getDepth(self):
         if self.thisptr:
             return self.thisptr.getDepth()
+        else:
+            raise NullPointerException
 
     def getKey(self):
         """
@@ -108,6 +125,8 @@ cdef class tree_iterator:
             key.thisptr[0][1] = self.thisptr.getKey()[1]
             key.thisptr[0][2] = self.thisptr.getKey()[2]
             return key
+        else:
+            raise NullPointerException
 
     def getIndexKey(self):
         """
@@ -119,20 +138,30 @@ cdef class tree_iterator:
             key.thisptr[0][1] = self.thisptr.getIndexKey()[1]
             key.thisptr[0][2] = self.thisptr.getIndexKey()[2]
             return key
+        else:
+            raise NullPointerException
 
     def getSize(self):
         if self.thisptr:
             return self.thisptr.getSize()
+        else:
+            raise NullPointerException
 
     def getX(self):
         if self.thisptr:
             return self.thisptr.getX()
+        else:
+            raise NullPointerException
     def getY(self):
         if self.thisptr:
             return self.thisptr.getY()
+        else:
+            raise NullPointerException
     def getZ(self):
         if self.thisptr:
             return self.thisptr.getZ()
+        else:
+            raise NullPointerException
 
 cdef class OcTree:
     """
