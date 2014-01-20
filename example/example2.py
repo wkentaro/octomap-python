@@ -18,8 +18,8 @@ if __name__ == "__main__":
         key = i.getKey()
         print "Key: ", key[0], key[1], key[2]
         print "IsLeaf: ", i.isLeaf()
-        print "Value: ", i.node.getValue()
-        print "Occupancy: ", i.node.getOccupancy()
+        print "Value: ", i.getValue()
+        print "Occupancy: ", i.getOccupancy()
         print "Occupied:", tree.isNodeOccupied(i)
         print "AtThreshold:", tree.isNodeAtThreshold(i)
     print "End Iteration."

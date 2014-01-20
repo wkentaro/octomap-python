@@ -48,20 +48,12 @@ cdef class OcTreeNode:
     def addValue(self, float p):
         self.thisptr.addValue(p)
 
-    def getOccupancy(self):
-        return self.thisptr.getOccupancy()
-
-    def getValue(self):
-        return self.thisptr.getValue()
-
-
 cdef class tree_iterator:
     """
     Iterator over the complete tree (inner nodes and leafs).
     """
     cdef defs.OcTree *treeptr
     cdef defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator *thisptr
-    cdef OcTreeNode node
     def __cinit__(self):
         pass
 
@@ -73,7 +65,6 @@ cdef class tree_iterator:
         if self.thisptr:
             if deref(self.thisptr) != self.treeptr.end_tree():
                 inc(deref(self.thisptr))
-                self.node.thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
                 return self
             else:
                 raise StopIteration
@@ -83,7 +74,6 @@ cdef class tree_iterator:
     def __iter__(self):
         if self.thisptr and self.treeptr:
             while deref(self.thisptr) != self.treeptr.end_tree():
-                self.node.thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
                 yield self
                 if self.thisptr:
                     inc(deref(self.thisptr))
@@ -163,6 +153,27 @@ cdef class tree_iterator:
         else:
             raise NullPointerException
 
+    def getOccupancy(self):
+        if self.thisptr:
+            return (<defs.OcTreeNode>deref(deref(self.thisptr))).getOccupancy()
+        else:
+            raise NullPointerException
+
+    def getValue(self):
+        if self.thisptr:
+            return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
+        else:
+            raise NullPointerException
+
+    property node:
+        def __get__(self):
+            if self.thisptr:
+                node = OcTreeNode()
+                (<OcTreeNode>node).thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
+                return node
+            else:
+                raise NullPointerException
+
 cdef class OcTree:
     """
     octomap main map data structure, stores 3D occupancy grid map in an OcTree.
@@ -239,11 +250,11 @@ cdef class OcTree:
     def writeBinary(self, char* filename):
         return self.thisptr.writeBinary(string(filename))
 
-    def isNodeOccupied(self, OcTreeNode node):
-        return self.thisptr.isNodeOccupied(deref(node.thisptr))
+    def isNodeOccupied(self, tree_iterator itr):
+        return self.thisptr.isNodeOccupied(<defs.OcTreeNode>deref(deref(itr.thisptr)))
 
-    def isNodeAtThreshold(self, OcTreeNode node):
-        return self.thisptr.isNodeAtThreshold(deref(node.thisptr))
+    def isNodeAtThreshold(self, tree_iterator itr):
+        return self.thisptr.isNodeAtThreshold(<defs.OcTreeNode>deref(deref(itr.thisptr)))
 
     def insertPointCloud(self,
                          np.ndarray[DOUBLE_t, ndim=2] pointcloud,
