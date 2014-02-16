@@ -30,6 +30,20 @@ class OctreeTestCase(unittest.TestCase):
         self.tree.setResolution(r)
         self.assertAlmostEqual(self.tree.getResolution(), r)
 
+    def test_Node(self):
+        self.tree.insertPointCloud(np.array([[1.0, 0.0 ,0.0]]),
+                                   np.array([0.0, 0.0, 0.0]))
+        node = self.tree.getRoot()
+        self.assertAlmostEqual(node.getValue(), 0.847298, places=5)
+        self.assertEqual(node.childExists(0), False)
+        self.assertEqual(node.childExists(1), False)
+        self.assertEqual(node.childExists(2), False)
+        self.assertEqual(node.childExists(3), False)
+        self.assertEqual(node.childExists(4), False)
+        self.assertEqual(node.childExists(5), False)
+        self.assertEqual(node.childExists(6), False)
+        self.assertEqual(node.childExists(7), True)
+        self.assertAlmostEqual(node.getChild(7).getValue(), 0.847298, places=5)
 
 if __name__ == "__main__":
     unittest.main()

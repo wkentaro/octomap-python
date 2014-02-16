@@ -22,11 +22,20 @@ cdef extern from "octomap/Pointcloud.h" namespace "octomap":
 cdef extern from "octomap/OcTreeNode.h" namespace "octomap":
     cdef cppclass OcTreeNode:
         OcTreeNode() except +
+        bool createChild(unsigned int i)
         void addValue(float& p)
         bool childExists(unsigned int i)
         float getValue()
+        void setValue(float v)
         double getOccupancy()
         void expandNode()
+        OcTreeNode* getChild(unsigned int i)
+        float getLogOdds()
+        void setLogOdds(float l)
+        bool hasChildren()
+        bool collapsible()
+        void deleteChild(unsigned int i)
+        bool pruneNode()
 
 cdef extern from "octomap/OcTreeKey.h" namespace "octomap":
     cdef cppclass OcTreeKey:

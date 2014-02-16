@@ -44,6 +44,11 @@ cdef class OcTreeNode:
         pass
     def __dealloc__(self):
         pass
+    def createChild(self, unsigned int i):
+        if self.thisptr:
+            return self.thisptr.createChild(i)
+        else:
+            raise NullPointerException
     def addValue(self, float p):
         if self.thisptr:
             self.thisptr.addValue(p)
@@ -59,6 +64,11 @@ cdef class OcTreeNode:
             return self.thisptr.getValue()
         else:
             raise NullPointerException
+    def setValue(self, float v):
+        if self.thisptr:
+            self.thisptr.setValue(v)
+        else:
+            raise NullPointerException
     def getOccupancy(self):
         if self.thisptr:
             return self.thisptr.getOccupancy()
@@ -67,6 +77,43 @@ cdef class OcTreeNode:
     def expandNode(self):
         if self.thisptr:
             self.thisptr.expandNode()
+        else:
+            raise NullPointerException
+    def getChild(self, unsigned int i):
+        node = OcTreeNode()
+        if self.thisptr:
+            node.thisptr = self.thisptr.getChild(i)
+            return node
+        else:
+            raise NullPointerException
+    def getLogOdds(self):
+        if self.thisptr:
+            return self.thisptr.getLogOdds()
+        else:
+            raise NullPointerException
+    def setLogOdds(self, float l):
+        if self.thisptr:
+            self.thisptr.setLogOdds(l)
+        else:
+            raise NullPointerException
+    def hasChildren(self):
+        if self.thisptr:
+            return self.thisptr.hasChildren()
+        else:
+            raise NullPointerException
+    def collapsible(self):
+        if self.thisptr:
+            return self.thisptr.collapsible()
+        else:
+            raise NullPointerException
+    def deleteChild(self, unsigned int i):
+        if self.thisptr:
+            self.thisptr.deleteChild(i)
+        else:
+            raise NullPointerException
+    def pruneNode(self):
+        if self.thisptr:
+            return self.thisptr.pruneNode()
         else:
             raise NullPointerException
 
