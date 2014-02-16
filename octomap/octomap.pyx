@@ -8,7 +8,7 @@ ctypedef np.float64_t DOUBLE_t
 
 class NullPointerException(Exception):
     """
-    Null pointer 例外
+    Null pointer exception
     """
     def __init__(self):
         pass
@@ -41,12 +41,34 @@ cdef class OcTreeKey:
 cdef class OcTreeNode:
     cdef defs.OcTreeNode *thisptr
     def __cinit__(self):
-        self.thisptr = new defs.OcTreeNode()
+        pass
     def __dealloc__(self):
-        if self.thisptr:
-            del self.thisptr
+        pass
     def addValue(self, float p):
-        self.thisptr.addValue(p)
+        if self.thisptr:
+            self.thisptr.addValue(p)
+        else:
+            raise NullPointerException
+    def childExists(self, unsigned int i):
+        if self.thisptr:
+            return self.thisptr.childExists(i)
+        else:
+            raise NullPointerException
+    def getValue(self):
+        if self.thisptr:
+            return self.thisptr.getValue()
+        else:
+            raise NullPointerException
+    def getOccupancy(self):
+        if self.thisptr:
+            return self.thisptr.getOccupancy()
+        else:
+            raise NullPointerException
+    def expandNode(self):
+        if self.thisptr:
+            self.thisptr.expandNode()
+        else:
+            raise NullPointerException
 
 cdef class tree_iterator:
     """
@@ -164,15 +186,6 @@ cdef class tree_iterator:
             return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
         else:
             raise NullPointerException
-
-    property node:
-        def __get__(self):
-            if self.thisptr:
-                node = OcTreeNode()
-                (<OcTreeNode>node).thisptr[0] = <defs.OcTreeNode>deref(deref(self.thisptr))
-                return node
-            else:
-                raise NullPointerException
 
 cdef class OcTree:
     """
@@ -314,6 +327,11 @@ cdef class OcTree:
         cdef defs.point3d p = self.thisptr.getBBXMin()
         return np.array((p.x(), p.y(), p.z()))
 
+    def getRoot(self):
+        node = OcTreeNode()
+        node.thisptr = self.thisptr.getRoot()
+        return node
+
     def getNumLeafNodes(self):
         return self.thisptr.getNumLeafNodes()
 
@@ -358,8 +376,8 @@ cdef class OcTree:
 
     def search(self, np.ndarray[DOUBLE_t, ndim=1] value, depth=0):
         node = OcTreeNode()
-        node.thisptr[0] = self.thisptr.search(defs.point3d(value[0], value[1], value[2]),
-                                              <unsigned int?>depth)[0]
+        node.thisptr = self.thisptr.search(defs.point3d(value[0], value[1], value[2]),
+                                           <unsigned int?>depth)
         return node
 
     def setBBXMax(self, np.ndarray[DOUBLE_t, ndim=1] max):
