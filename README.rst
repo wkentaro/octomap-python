@@ -7,13 +7,13 @@ This library is a Python binding of Octomap library.
 
 Build
 -----
-Building python-octomap requires Octomap headers and libraries.
+Building **python-octomap requires Octomap headers and libraries**.
 When building, you can specify their location with the --include-dirs
 and --library-dirs command line options:
 
     $ python setup.py build_ext --include-dirs /path/to/includes --library-dirs /path/to/libraries
 
-If you use ubuntu 12.04 and install ros at /opt directory, you can use the following command:
+If you use ubuntu 12.04 and install ros-octomap at /opt directory, you can use the following command:
 
     $ python setup.py build
 
