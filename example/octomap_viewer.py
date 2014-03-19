@@ -33,16 +33,12 @@ class OctomapViewer:
         show()
 
 if __name__ == "__main__":
-    from optparse import OptionParser
-    usage = "Usage: python %prog [options]"
-    parser = OptionParser(usage)
-    parser.add_option("-f", "--file", action="store",
-                      type="string", dest="filename", help="Input file name")
-    parser.add_option("-s", action="store_true",
-                      default=False, dest="free", help="Draw free space.")
-    (options, args) = parser.parse_args()
-    if options.filename is None:
-        parser.print_help()
-        exit()
+    import argparse
+    parser = argparse.ArgumentParser(description='Octomap viewer using mayavi')
+    parser.add_argument("-f", "--file", action="store",
+                        type=str, dest="filename", help="Input file name")
+    parser.add_argument("-s", action="store_true",
+                        default=False, dest="free", help="Draw free space.")
+    options = parser.parse_args()
     viewer = OctomapViewer(options.filename, options.free)
     viewer.draw()
