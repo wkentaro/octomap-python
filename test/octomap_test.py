@@ -45,5 +45,24 @@ class OctreeTestCase(unittest.TestCase):
         self.assertEqual(node.childExists(7), True)
         self.assertAlmostEqual(node.getChild(7).getValue(), 0.847298, places=5)
 
+    def test_Update(self):
+        test_point1 = np.array([1.0, 2.0, 3.0])
+        test_point2 = np.array([0.0, 0.0, 0.0])
+        test_point3 = np.array([5.0, 5.0, 5.0])
+        self.tree.insertPointCloud(np.array([test_point1]),
+                                   np.array([0.0, 0.0, 0.0]))
+        node1 = self.tree.search(test_point1)
+        node2 = self.tree.search(test_point2)
+        node3 = self.tree.search(test_point3)
+        self.assertTrue(self.tree.isNodeOccupied(node1))
+        self.assertFalse(self.tree.isNodeOccupied(node2))
+        self.assertFalse(self.tree.isNodeOccupied(node3))
+
+        self.tree.updateNode(test_point2, True)
+        self.tree.updateNode(test_point3, True)
+        self.tree.updateInnerOccupancy()
+        self.assertTrue(self.tree.isNodeOccupied(node2))
+        self.assertFalse(self.tree.isNodeOccupied(node3))
+
 if __name__ == "__main__":
     unittest.main()
