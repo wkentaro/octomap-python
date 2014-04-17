@@ -56,13 +56,11 @@ class OctreeTestCase(unittest.TestCase):
         node3 = self.tree.search(test_point3)
         self.assertTrue(self.tree.isNodeOccupied(node1))
         self.assertFalse(self.tree.isNodeOccupied(node2))
-        self.assertFalse(self.tree.isNodeOccupied(node3))
+        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node3))
 
         self.tree.updateNode(test_point2, True)
-        self.tree.updateNode(test_point3, True)
         self.tree.updateInnerOccupancy()
         self.assertTrue(self.tree.isNodeOccupied(node2))
-        self.assertFalse(self.tree.isNodeOccupied(node3))
 
 if __name__ == "__main__":
     unittest.main()

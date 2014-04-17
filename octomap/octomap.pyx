@@ -316,7 +316,7 @@ cdef class OcTree:
             if (<OcTreeNode>node).thisptr:
                 return self.thisptr.isNodeOccupied(deref((<OcTreeNode>node).thisptr))
             else:
-                return False
+                raise NullPointerException
         else:
             return self.thisptr.isNodeOccupied(<defs.OcTreeNode>deref(deref((<tree_iterator>node).thisptr)))
 
@@ -325,7 +325,7 @@ cdef class OcTree:
             if (<OcTreeNode>node).thisptr:
                 return self.thisptr.isNodeAtThreshold(deref((<OcTreeNode>node).thisptr))
             else:
-                return False
+                raise NullPointerException
         else:
             return self.thisptr.isNodeAtThreshold(<defs.OcTreeNode>deref(deref((<tree_iterator>node).thisptr)))
 
