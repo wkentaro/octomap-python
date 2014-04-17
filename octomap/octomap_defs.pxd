@@ -40,6 +40,7 @@ cdef extern from "octomap/OcTreeNode.h" namespace "octomap":
 cdef extern from "octomap/OcTreeKey.h" namespace "octomap":
     cdef cppclass OcTreeKey:
         OcTreeKey() except +
+        OcTreeKey(unsigned short int a, unsigned short int b, unsigned short int c) except +
         OcTreeKey(OcTreeKey& other)
         unsigned short int& operator[](unsigned int i)
 
@@ -107,6 +108,10 @@ cdef extern from "octomap/OcTree.h" namespace "octomap":
         void setResolution(double r)
         size_t size()
         void toMaxLikelihood()
+        OcTreeNode* updateNode(double x, double y, double z, float log_odds_update, bool lazy_eval)
+        OcTreeNode* updateNode(double x, double y, double z, bool occupied, bool lazy_eval)
+        OcTreeNode* updateNode(OcTreeKey& key, float log_odds_update, bool lazy_eval)
+        OcTreeNode* updateNode(OcTreeKey& key, bool occupied, bool lazy_eval)
         void updateInnerOccupancy()
         void useBBXLimit(bool enable)
         double volume()

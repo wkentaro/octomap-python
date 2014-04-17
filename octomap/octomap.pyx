@@ -1,4 +1,5 @@
 from libcpp.string cimport string
+from libcpp cimport bool as cppbool
 from libc.string cimport memcpy
 from cython.operator cimport dereference as deref, preincrement as inc, address
 cimport octomap_defs as defs
@@ -421,10 +422,18 @@ cdef class OcTree:
         """
         self.thisptr.resetChangeDetection()
 
-    def search(self, np.ndarray[DOUBLE_t, ndim=1] value, depth=0):
+    def search(self, value, depth=0):
         node = OcTreeNode()
-        node.thisptr = self.thisptr.search(defs.point3d(value[0], value[1], value[2]),
-                                           <unsigned int?>depth)
+        if isinstance(value, OcTreeKey):
+            node.thisptr = self.thisptr.search(defs.OcTreeKey(<unsigned short int>value[0],
+                                                              <unsigned short int>value[1],
+                                                              <unsigned short int>value[2]),
+                                               <unsigned int?>depth)
+        else:
+            node.thisptr = self.thisptr.search(<double>value[0],
+                                               <double>value[1],
+                                               <double>value[2],
+                                               <unsigned int?>depth)
         return node
 
     def setBBXMax(self, np.ndarray[DOUBLE_t, ndim=1] max):
@@ -454,6 +463,39 @@ cdef class OcTree:
         setting their occupancy to the corresponding occupancy thresholds.
         """
         self.thisptr.toMaxLikelihood()
+
+    def updateNode(self, value, update, lazy_eval=False):
+        """
+        Integrate occupancy measurement and Manipulate log_odds value of voxel directly. 
+        """
+        node = OcTreeNode()
+        if isinstance(value, OcTreeKey):
+            if isinstance(update, bool):
+                node.thisptr = self.thisptr.updateNode(defs.OcTreeKey(<unsigned short int>value[0],
+                                                                      <unsigned short int>value[1],
+                                                                      <unsigned short int>value[2]),
+                                                       <cppbool>update,
+                                                       <cppbool?>lazy_eval)
+            else:
+                node.thisptr = self.thisptr.updateNode(defs.OcTreeKey(<unsigned short int>value[0],
+                                                                      <unsigned short int>value[1],
+                                                                      <unsigned short int>value[2]),
+                                                       <float?>update,
+                                                       <cppbool?>lazy_eval)
+        else:
+            if isinstance(update, bool):
+                node.thisptr = self.thisptr.updateNode(<double?>value[0],
+                                                       <double?>value[1],
+                                                       <double?>value[2],
+                                                       <cppbool>update,
+                                                       <cppbool?>lazy_eval)
+            else:
+                node.thisptr = self.thisptr.updateNode(<double?>value[0],
+                                                       <double?>value[1],
+                                                       <double?>value[2],
+                                                       <float?>update,
+                                                       <cppbool?>lazy_eval)
+        return node
 
     def updateInnerOccupancy(self):
         """
