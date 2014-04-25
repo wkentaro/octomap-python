@@ -15,6 +15,13 @@ class OctreeTestCase(unittest.TestCase):
     def test_writeBinary(self):
         self.assertTrue(self.tree.writeBinary("test1.bt"))
 
+    def test_checkBinary(self):
+        self.tree.readBinary("test.bt")
+        data = self.tree.writeBinary()
+        tree2 = octomap.OcTree(0.1)
+        tree2.readBinary(data)
+        self.assertEqual(tree2.writeBinary(), data)
+
     def test_BBXMax(self):
         a = np.array((1.0, 2.0, 3.0))
         self.tree.setBBXMax(a)

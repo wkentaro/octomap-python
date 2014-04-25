@@ -245,7 +245,7 @@ cdef class OcTree:
         if isinstance(arg, numbers.Number):
             self.thisptr = new defs.OcTree(<double?>arg)
         else:
-            self.thisptr = new defs.OcTree(string(<char*>arg))
+            self.thisptr = new defs.OcTree(string(<char*?>arg))
 
     def __dealloc__(self):
         if self.thisptr:
@@ -305,11 +305,24 @@ cdef class OcTree:
                                     bool(ignoreUnknownCells),
                                     <double?>maxRange)
 
-    def readBinary(self, char* filename):
-        return self.thisptr.readBinary(string(filename))
+    def readBinary(self, filename):
+        cdef defs.istringstream iss
+        if filename.startswith("# Octomap OcTree binary file"):
+            iss.str(string(<char*?>filename, len(filename)))
+            return self.thisptr.readBinary(<defs.istream&?>iss)
+        else:
+            return self.thisptr.readBinary(string(<char*?>filename))
 
-    def writeBinary(self, char* filename):
-        return self.thisptr.writeBinary(string(filename))
+    def writeBinary(self, filename=None):
+        cdef defs.ostringstream oss
+        if not filename is None:
+            return self.thisptr.writeBinary(string(<char*?>filename))
+        else:
+            ret = self.thisptr.writeBinary(<defs.ostream&?>oss)
+            if ret:
+                return oss.str().c_str()[:oss.str().length()]
+            else:
+                return False
 
     def isNodeOccupied(self, node):
         if isinstance(node, OcTreeNode):

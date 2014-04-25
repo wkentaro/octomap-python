@@ -1,6 +1,22 @@
 from libcpp cimport bool
 from libcpp.string cimport string
 
+cdef extern from "<iostream>" namespace "std":
+    cdef cppclass istream:
+        istream() except +
+    cdef cppclass ostream:
+        ostream() except +
+
+cdef extern from "<sstream>" namespace "std":
+    cdef cppclass istringstream:
+        istringstream() except +
+        istringstream(string& s) except +
+        string str()
+        void str(string& s)
+    cdef cppclass ostringstream:
+        ostringstream() except +
+        string str()
+
 cdef extern from "octomap/math/Vector3.h" namespace "octomath":
     cdef cppclass Vector3:
         Vector3() except +
@@ -77,7 +93,9 @@ cdef extern from "octomap/OcTree.h" namespace "octomap":
         bool castRay(point3d& origin, point3d& direction, point3d& end,
                      bool ignoreUnknownCells, double maxRange)
         bool readBinary(string& filename)
+        bool readBinary(istream& s)
         bool writeBinary(string& filename)
+        bool writeBinary(ostream& s)
         bool isNodeOccupied(OcTreeNode& occupancyNode)
         bool isNodeAtThreshold(OcTreeNode& occupancyNode)
         void insertPointCloud(Pointcloud& scan, point3d& sensor_origin,
