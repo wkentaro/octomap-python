@@ -92,6 +92,10 @@ cdef extern from "octomap/OcTree.h" namespace "octomap":
         bool deleteNode(point3d& value, unsigned int depth)
         bool castRay(point3d& origin, point3d& direction, point3d& end,
                      bool ignoreUnknownCells, double maxRange)
+        bool read(string& filename)
+        bool read(istream& s)
+        bool write(string& filename)
+        bool write(ostream& s)
         bool readBinary(string& filename)
         bool readBinary(istream& s)
         bool writeBinary(string& filename)

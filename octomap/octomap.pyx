@@ -305,6 +305,25 @@ cdef class OcTree:
                                     bool(ignoreUnknownCells),
                                     <double?>maxRange)
 
+    def read(self, filename):
+        cdef defs.istringstream iss
+        if filename.startswith("# Octomap OcTree binary file"):
+            iss.str(string(<char*?>filename, len(filename)))
+            return self.thisptr.read(<defs.istream&?>iss)
+        else:
+            return self.thisptr.read(string(<char*?>filename))
+
+    def write(self, filename=None):
+        cdef defs.ostringstream oss
+        if not filename is None:
+            return self.thisptr.write(string(<char*?>filename))
+        else:
+            ret = self.thisptr.write(<defs.ostream&?>oss)
+            if ret:
+                return oss.str().c_str()[:oss.str().length()]
+            else:
+                return False
+
     def readBinary(self, filename):
         cdef defs.istringstream iss
         if filename.startswith("# Octomap OcTree binary file"):
