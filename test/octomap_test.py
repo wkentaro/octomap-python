@@ -15,6 +15,12 @@ class OctreeTestCase(unittest.TestCase):
     def test_writeBinary(self):
         self.assertTrue(self.tree.writeBinary("test1.bt"))
 
+    def test_checkTree(self):
+        self.tree.readBinary("test.bt")
+        data = self.tree.write()
+        tree2 = octomap.OcTree.read(data)
+        self.assertEqual(tree2.write(), data)
+
     def test_checkBinary(self):
         self.tree.readBinary("test.bt")
         data = self.tree.writeBinary()

@@ -235,6 +235,23 @@ cdef class tree_iterator:
         else:
             raise NullPointerException
 
+def _octree_read(filename):
+    """
+    Read the file header, create the appropriate class and deserialize.
+    This creates a new octree which you need to delete yourself.
+    """
+    cdef defs.istringstream iss
+    cdef OcTree tree = OcTree(0.1)
+    if filename.startswith("# Octomap OcTree file"):
+        iss.str(string(<char*?>filename, len(filename)))
+        del tree.thisptr
+        tree.thisptr = <defs.OcTree*>tree.thisptr.read(<defs.istream&?>iss)
+        return tree
+    else:
+        del tree.thisptr
+        tree.thisptr = <defs.OcTree*>tree.thisptr.read(string(<char*?>filename))
+        return tree
+
 cdef class OcTree:
     """
     octomap main map data structure, stores 3D occupancy grid map in an OcTree.
@@ -304,16 +321,12 @@ cdef class OcTree:
                                     defs.point3d(end[0], end[1], end[2]),
                                     bool(ignoreUnknownCells),
                                     <double?>maxRange)
-
-    def read(self, filename):
-        cdef defs.istringstream iss
-        if filename.startswith("# Octomap OcTree binary file"):
-            iss.str(string(<char*?>filename, len(filename)))
-            return self.thisptr.read(<defs.istream&?>iss)
-        else:
-            return self.thisptr.read(string(<char*?>filename))
+    read = _octree_read
 
     def write(self, filename=None):
+        """
+        Write file header and complete tree to file/stream (serialization)
+        """
         cdef defs.ostringstream oss
         if not filename is None:
             return self.thisptr.write(string(<char*?>filename))
@@ -555,4 +568,3 @@ cdef class OcTree:
 
     def volume(self):
         return self.thisptr.volume()
-
