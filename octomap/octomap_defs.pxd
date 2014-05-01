@@ -60,7 +60,7 @@ cdef extern from "octomap/OcTreeKey.h" namespace "octomap":
         OcTreeKey(OcTreeKey& other)
         unsigned short int& operator[](unsigned int i)
 
-cdef extern from "octomap/OccupancyOcTreeBase.h" namespace "octomap":
+cdef extern from "include_and_setting.h" namespace "octomap":
     cdef cppclass OccupancyOcTreeBase[T]:
         cppclass tree_iterator:
             tree_iterator() except +
@@ -79,7 +79,7 @@ cdef extern from "octomap/OccupancyOcTreeBase.h" namespace "octomap":
             double getY() except +
             double getZ() except +
 
-cdef extern from "octomap/OcTree.h" namespace "octomap":
+cdef extern from "include_and_setting.h" namespace "octomap":
     cdef cppclass OcTree:
         OcTree(double resolution) except +
         OcTree(string _filename) except +
