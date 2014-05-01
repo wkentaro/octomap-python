@@ -29,7 +29,7 @@ if not platform_supported:
 
 setup(
     name="octomap",
-    version="0.3",
+    version="0.4",
     license = "BSD",
     packages=["octomap"],
     ext_modules=[Extension(
