@@ -40,22 +40,36 @@ cdef class OcTreeKey:
                         self.thisptr[0][2] == other[2])
 
 cdef class OcTreeNode:
+    """
+    Nodes to be used in OcTree.
+    They represent 3d occupancy grid cells. "value" stores their log-odds occupancy.
+    """
     cdef defs.OcTreeNode *thisptr
     def __cinit__(self):
         pass
     def __dealloc__(self):
         pass
     def createChild(self, unsigned int i):
+        """
+        initialize i-th child, allocate children array if needed
+        """
         if self.thisptr:
             return self.thisptr.createChild(i)
         else:
             raise NullPointerException
     def addValue(self, float p):
+        """
+        adds p to the node's logOdds value (with no boundary / threshold checking!)
+        """
         if self.thisptr:
             self.thisptr.addValue(p)
         else:
             raise NullPointerException
     def childExists(self, unsigned int i):
+        """
+        Safe test to check of the i-th child exists,
+        first tests if there are any children.
+        """
         if self.thisptr:
             return self.thisptr.childExists(i)
         else:
@@ -103,11 +117,18 @@ cdef class OcTreeNode:
         else:
             raise NullPointerException
     def collapsible(self):
+        """
+        A node is collapsible if all children exist,
+        don't have children of their own and have the same occupancy value.
+        """
         if self.thisptr:
             return self.thisptr.collapsible()
         else:
             raise NullPointerException
     def deleteChild(self, unsigned int i):
+        """
+        Deletes the i-th child of the node.
+        """
         if self.thisptr:
             self.thisptr.deleteChild(i)
         else:
