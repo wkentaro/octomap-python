@@ -589,3 +589,48 @@ cdef class OcTree:
 
     def volume(self):
         return self.thisptr.volume()
+
+    def getClampingThresMax(self):
+        return self.thisptr.getClampingThresMax()
+
+    def getClampingThresMaxLog(self):
+        return self.thisptr.getClampingThresMaxLog()
+
+    def getClampingThresMin(self):
+        return self.thisptr.getClampingThresMin()
+
+    def getClampingThresMinLog(self):
+        return self.thisptr.getClampingThresMinLog()
+
+    def getOccupancyThres(self):
+        return self.thisptr.getOccupancyThres()
+
+    def getOccupancyThresLog(self):
+        return self.thisptr.getOccupancyThresLog()
+
+    def getProbHit(self):
+        return self.thisptr.getProbHit()
+
+    def getProbHitLog(self):
+        return self.thisptr.getProbHitLog()
+
+    def getProbMiss(self):
+        return self.thisptr.getProbMiss()
+
+    def getProbMissLog(self):
+        return self.thisptr.getProbMissLog()
+
+    def setClampingThresMax(self, double thresProb):
+        self.thisptr.setClampingThresMax(thresProb)
+
+    def setClampingThresMin(self, double thresProb):
+        self.thisptr.setClampingThresMin(thresProb)
+
+    def setOccupancyThres(self, double prob):
+        self.thisptr.setOccupancyThres(prob)
+
+    def setProbHit(self, double prob):
+        self.thisptr.setProbHit(prob)
+
+    def setProbMiss(self, double prob):
+        self.thisptr.setProbMiss(prob)

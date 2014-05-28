@@ -137,3 +137,21 @@ cdef extern from "include_and_setting.h" namespace "octomap":
         void updateInnerOccupancy()
         void useBBXLimit(bool enable)
         double volume()
+
+        double getClampingThresMax()
+        float getClampingThresMaxLog()
+        double getClampingThresMin()
+        float getClampingThresMinLog()
+
+        double getOccupancyThres()
+        float getOccupancyThresLog()
+        double getProbHit()
+        float getProbHitLog()
+        double getProbMiss()
+        float getProbMissLog()
+
+        void setClampingThresMax(double thresProb)
+        void setClampingThresMin(double thresProb)
+        void setOccupancyThres(double prob)
+        void setProbHit(double prob)
+        void setProbMiss(double prob)
