@@ -310,15 +310,45 @@ cdef class OcTree:
     def clear(self):
         self.thisptr.clear()
 
-    def coordToKey(self, np.ndarray[DOUBLE_t, ndim=1] coord):
-        cdef defs.OcTreeKey key = self.thisptr.coordToKey(defs.point3d(coord[0],
-                                                                       coord[1],
-                                                                       coord[2]))
+    def coordToKey(self, np.ndarray[DOUBLE_t, ndim=1] coord, depth=None):
+        cdef defs.OcTreeKey key
+        if depth is None:
+            key = self.thisptr.coordToKey(defs.point3d(coord[0],
+                                                       coord[1],
+                                                       coord[2]))
+        else:
+            key = self.thisptr.coordToKey(defs.point3d(coord[0],
+                                                       coord[1],
+                                                       coord[2]),
+                                          <unsigned int?>depth)
         res = OcTreeKey()
         res[0] = key[0]
         res[1] = key[1]
         res[2] = key[2]
         return res
+
+    def coordToKeyChecked(self, np.ndarray[DOUBLE_t, ndim=1] coord, depth=None):
+        cdef defs.OcTreeKey key
+        cdef cppbool chk
+        if depth is None:
+            chk = self.thisptr.coordToKeyChecked(defs.point3d(coord[0],
+                                                              coord[1],
+                                                              coord[2]),
+                                                 key)
+        else:
+            chk = self.thisptr.coordToKeyChecked(defs.point3d(coord[0],
+                                                              coord[1],
+                                                              coord[2]),
+                                                 <unsigned int?>depth,
+                                                 key)
+        if chk:
+            res = OcTreeKey()
+            res[0] = key[0]
+            res[1] = key[1]
+            res[2] = key[2]
+            return chk, res
+        else:
+            return chk, None
 
     def deleteNode(self, np.ndarray[DOUBLE_t, ndim=1] value, depth=1):
         return self.thisptr.deleteNode(defs.point3d(value[0],
@@ -634,3 +664,24 @@ cdef class OcTree:
 
     def setProbMiss(self, double prob):
         self.thisptr.setProbMiss(prob)
+
+    def getMetricSize(self):
+        cdef double x = 0
+        cdef double y = 0
+        cdef double z = 0
+        self.thisptr.getMetricSize(x, y, z)
+        return (x, y, z)
+
+    def getMetricMin(self):
+        cdef double x = 0
+        cdef double y = 0
+        cdef double z = 0
+        self.thisptr.getMetricMin(x, y, z)
+        return (x, y, z)
+
+    def getMetricMax(self):
+        cdef double x = 0
+        cdef double y = 0
+        cdef double z = 0
+        self.thisptr.getMetricMax(x, y, z)
+        return (x, y, z)

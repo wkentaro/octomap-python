@@ -62,22 +62,32 @@ cdef extern from "octomap/OcTreeKey.h" namespace "octomap":
 
 cdef extern from "include_and_setting.h" namespace "octomap":
     cdef cppclass OccupancyOcTreeBase[T]:
-        cppclass tree_iterator:
-            tree_iterator() except +
-            tree_iterator(tree_iterator&) except +
+        cppclass iterator_base:
             point3d getCoordinate()
             unsigned int getDepth()
             OcTreeKey getIndexKey()
             OcTreeKey& getKey()
+            double getSize() except +
+            double getX() except +
+            double getY() except +
+            double getZ() except +
+
+        cppclass tree_iterator(iterator_base):
+            tree_iterator() except +
+            tree_iterator(tree_iterator&) except +
             tree_iterator& operator++()
             OcTreeNode& operator*()
             bool operator==(tree_iterator &other)
             bool operator!=(tree_iterator &other)
             bool isLeaf() except +
-            double getSize() except +
-            double getX() except +
-            double getY() except +
-            double getZ() except +
+
+        cppclass leaf_iterator(iterator_base):
+            leaf_iterator() except +
+            leaf_iterator(leaf_iterator&) except +
+            leaf_iterator& operator++()
+            OcTreeNode& operator*()
+            bool operator==(leaf_iterator &other)
+            bool operator!=(leaf_iterator &other)
 
 cdef extern from "include_and_setting.h" namespace "octomap":
     cdef cppclass OcTree:
@@ -89,6 +99,9 @@ cdef extern from "include_and_setting.h" namespace "octomap":
         size_t calcNumNodes()
         void clear()
         OcTreeKey coordToKey(point3d& coord)
+        OcTreeKey coordToKey(point3d& coord, unsigned int depth)
+        bool coordToKeyChecked(point3d& coord, OcTreeKey& key)
+        bool coordToKeyChecked(point3d& coord, unsigned int depth, OcTreeKey& key)
         bool deleteNode(point3d& value, unsigned int depth)
         bool castRay(point3d& origin, point3d& direction, point3d& end,
                      bool ignoreUnknownCells, double maxRange)
@@ -155,3 +168,7 @@ cdef extern from "include_and_setting.h" namespace "octomap":
         void setOccupancyThres(double prob)
         void setProbHit(double prob)
         void setProbMiss(double prob)
+
+        void getMetricSize(double& x, double& y, double& z)
+        void getMetricMin(double& x, double& y, double& z)
+        void getMetricMax(double& x, double& y, double& z)
