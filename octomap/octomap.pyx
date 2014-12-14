@@ -152,9 +152,18 @@ cdef class tree_iterator:
         if self.thisptr:
             del self.thisptr
 
+    def __is_end(self):
+        return deref(self.thisptr) == self.treeptr.end_tree()
+
+    def __is_acceseable(self):
+        if self.thisptr and self.treeptr:
+            if not self.__is_end():
+                return True
+        return False
+
     def next(self):
-        if self.thisptr:
-            if deref(self.thisptr) != self.treeptr.end_tree():
+        if self.thisptr and self.treeptr:
+            if not self.__is_end():
                 inc(deref(self.thisptr))
                 return self
             else:
@@ -164,7 +173,7 @@ cdef class tree_iterator:
 
     def __iter__(self):
         if self.thisptr and self.treeptr:
-            while deref(self.thisptr) != self.treeptr.end_tree():
+            while not self.__is_end():
                 yield self
                 if self.thisptr:
                     inc(deref(self.thisptr))
@@ -174,7 +183,7 @@ cdef class tree_iterator:
             raise NullPointerException
 
     def isLeaf(self):
-        if self.thisptr:
+        if self.__is_acceseable():
             return self.thisptr.isLeaf()
         else:
             raise NullPointerException
@@ -184,14 +193,14 @@ cdef class tree_iterator:
         return the center coordinate of the current node
         """
         cdef defs.Vector3 pt
-        if self.thisptr:
+        if self.__is_acceseable():
             pt = self.thisptr.getCoordinate()
             return np.array((pt.x(), pt.y(), pt.z()))
         else:
             raise NullPointerException
 
     def getDepth(self):
-        if self.thisptr:
+        if self.__is_acceseable():
             return self.thisptr.getDepth()
         else:
             raise NullPointerException
@@ -200,7 +209,7 @@ cdef class tree_iterator:
         """
         the OcTreeKey of the current node
         """
-        if self.thisptr:
+        if self.__is_acceseable():
             key = OcTreeKey()
             key.thisptr[0][0] = self.thisptr.getKey()[0]
             key.thisptr[0][1] = self.thisptr.getKey()[1]
@@ -213,7 +222,7 @@ cdef class tree_iterator:
         """
         the OcTreeKey of the current node, for nodes with depth != maxDepth
         """
-        if self.thisptr:
+        if self.__is_acceseable():
             key = OcTreeKey()
             key.thisptr[0][0] = self.thisptr.getIndexKey()[0]
             key.thisptr[0][1] = self.thisptr.getIndexKey()[1]
@@ -223,35 +232,35 @@ cdef class tree_iterator:
             raise NullPointerException
 
     def getSize(self):
-        if self.thisptr:
+        if self.__is_acceseable():
             return self.thisptr.getSize()
         else:
             raise NullPointerException
 
     def getX(self):
-        if self.thisptr:
+        if self.__is_acceseable():
             return self.thisptr.getX()
         else:
             raise NullPointerException
     def getY(self):
-        if self.thisptr:
+        if self.__is_acceseable():
             return self.thisptr.getY()
         else:
             raise NullPointerException
     def getZ(self):
-        if self.thisptr:
+        if self.__is_acceseable():
             return self.thisptr.getZ()
         else:
             raise NullPointerException
 
     def getOccupancy(self):
-        if self.thisptr:
+        if self.__is_acceseable():
             return (<defs.OcTreeNode>deref(deref(self.thisptr))).getOccupancy()
         else:
             raise NullPointerException
 
     def getValue(self):
-        if self.thisptr:
+        if self.__is_acceseable():
             return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
         else:
             raise NullPointerException
