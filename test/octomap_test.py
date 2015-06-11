@@ -75,5 +75,18 @@ class OctreeTestCase(unittest.TestCase):
         self.tree.updateInnerOccupancy()
         self.assertTrue(self.tree.isNodeOccupied(node2))
 
+    def test_Iterator(self):
+        self.tree.insertPointCloud(np.array([[1.0, 0.0 ,0.0],
+                                             [0.0, 0.0, 1.0],
+                                             [-1.0, 0.0, 0.0],
+                                             [0.0, 0.0, -1.0]]),
+                                   np.array([0.0, 1.0, 0.0]))
+        nodes = [i for i in self.tree.begin_tree() if i.isLeaf()]
+        leafs = [i for i in self.tree.begin_leafs()]
+        leafs_bbx = [i for i in self.tree.begin_leafs_bbx(np.array([0.0, 0.0, 0.0]),
+                                                          np.array([1.0, 0.0, 0.0]))]
+        self.assertEqual(len(nodes), len(leafs))
+        self.assertEqual(len(leafs_bbx), 2)
+
 if __name__ == "__main__":
     unittest.main()

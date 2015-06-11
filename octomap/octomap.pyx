@@ -6,6 +6,9 @@ cimport octomap_defs as defs
 import numpy as np
 cimport numpy as np
 ctypedef np.float64_t DOUBLE_t
+ctypedef defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator* tree_iterator_ptr
+ctypedef defs.OccupancyOcTreeBase[defs.OcTreeNode].leaf_iterator* leaf_iterator_ptr
+ctypedef defs.OccupancyOcTreeBase[defs.OcTreeNode].leaf_bbx_iterator* leaf_bbx_iterator_ptr
 
 class NullPointerException(Exception):
     """
@@ -139,12 +142,12 @@ cdef class OcTreeNode:
         else:
             raise NullPointerException
 
-cdef class tree_iterator:
+cdef class iterator_base:
     """
     Iterator over the complete tree (inner nodes and leafs).
     """
     cdef defs.OcTree *treeptr
-    cdef defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator *thisptr
+    cdef defs.OccupancyOcTreeBase[defs.OcTreeNode].iterator_base *thisptr
     def __cinit__(self):
         pass
 
@@ -160,33 +163,6 @@ cdef class tree_iterator:
             if not self.__is_end():
                 return True
         return False
-
-    def next(self):
-        if self.thisptr and self.treeptr:
-            if not self.__is_end():
-                inc(deref(self.thisptr))
-                return self
-            else:
-                raise StopIteration
-        else:
-            raise NullPointerException
-
-    def __iter__(self):
-        if self.thisptr and self.treeptr:
-            while not self.__is_end():
-                yield self
-                if self.thisptr:
-                    inc(deref(self.thisptr))
-                else:
-                    break
-        else:
-            raise NullPointerException
-
-    def isLeaf(self):
-        if self.__is_acceseable():
-            return self.thisptr.isLeaf()
-        else:
-            raise NullPointerException
 
     def getCoordinate(self):
         """
@@ -262,6 +238,97 @@ cdef class tree_iterator:
     def getValue(self):
         if self.__is_acceseable():
             return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
+        else:
+            raise NullPointerException
+
+
+cdef class tree_iterator(iterator_base):
+    """
+    Iterator over the complete tree (inner nodes and leafs).
+    """
+    def __cinit__(self):
+        pass
+
+    def next(self):
+        if self.thisptr and self.treeptr:
+            if not self.__is_end():
+                inc(deref(defs.static_cast[tree_iterator_ptr](self.thisptr)))
+                return self
+            else:
+                raise StopIteration
+        else:
+            raise NullPointerException
+
+    def __iter__(self):
+        if self.thisptr and self.treeptr:
+            while not self.__is_end():
+                yield self
+                if self.thisptr:
+                    inc(deref(defs.static_cast[tree_iterator_ptr](self.thisptr)))
+                else:
+                    break
+        else:
+            raise NullPointerException
+
+    def isLeaf(self):
+        if self.__is_acceseable():
+            return defs.static_cast[tree_iterator_ptr](self.thisptr).isLeaf()
+        else:
+            raise NullPointerException
+
+cdef class leaf_iterator(iterator_base):
+    """
+    Iterator over the complete tree (leafs).
+    """
+    def __cinit__(self):
+        pass
+
+    def next(self):
+        if self.thisptr and self.treeptr:
+            if not self.__is_end():
+                inc(deref(defs.static_cast[leaf_iterator_ptr](self.thisptr)))
+                return self
+            else:
+                raise StopIteration
+        else:
+            raise NullPointerException
+
+    def __iter__(self):
+        if self.thisptr and self.treeptr:
+            while not self.__is_end():
+                yield self
+                if self.thisptr:
+                    inc(deref(defs.static_cast[leaf_iterator_ptr](self.thisptr)))
+                else:
+                    break
+        else:
+            raise NullPointerException
+
+cdef class leaf_bbx_iterator(iterator_base):
+    """
+    Iterator over the complete tree (leafs).
+    """
+    def __cinit__(self):
+        pass
+
+    def next(self):
+        if self.thisptr and self.treeptr:
+            if not self.__is_end():
+                inc(deref(defs.static_cast[leaf_bbx_iterator_ptr](self.thisptr)))
+                return self
+            else:
+                raise StopIteration
+        else:
+            raise NullPointerException
+
+    def __iter__(self):
+        if self.thisptr and self.treeptr:
+            while not self.__is_end():
+                yield self
+                if self.thisptr:
+                    inc(deref(defs.static_cast[leaf_bbx_iterator_ptr](self.thisptr)))
+                else:
+                    break
         else:
             raise NullPointerException
 
@@ -470,9 +537,35 @@ cdef class OcTree:
         itr.treeptr = self.thisptr
         return itr
 
+    def begin_leafs(self, maxDepth=0):
+        itr = leaf_iterator()
+        itr.thisptr = new defs.OccupancyOcTreeBase[defs.OcTreeNode].leaf_iterator(self.thisptr.begin_leafs(maxDepth))
+        itr.treeptr = self.thisptr
+        return itr
+
+    def begin_leafs_bbx(self, np.ndarray[DOUBLE_t, ndim=1] bbx_min, np.ndarray[DOUBLE_t, ndim=1] bbx_max, maxDepth=0):
+        itr = leaf_bbx_iterator()
+        itr.thisptr = new defs.OccupancyOcTreeBase[defs.OcTreeNode].leaf_bbx_iterator(self.thisptr.begin_leafs_bbx(defs.point3d(bbx_min[0], bbx_min[1], bbx_min[2]),
+                                                                                                                   defs.point3d(bbx_max[0], bbx_max[1], bbx_max[2]),
+                                                                                                                   maxDepth))
+        itr.treeptr = self.thisptr
+        return itr
+
     def end_tree(self):
         itr = tree_iterator()
         itr.thisptr = new defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator(self.thisptr.end_tree())
+        itr.treeptr = self.thisptr
+        return itr
+
+    def end_leafs(self):
+        itr = leaf_iterator()
+        itr.thisptr = new defs.OccupancyOcTreeBase[defs.OcTreeNode].leaf_iterator(self.thisptr.end_leafs())
+        itr.treeptr = self.thisptr
+        return itr
+
+    def end_leafs_bbx(self):
+        itr = leaf_bbx_iterator()
+        itr.thisptr = new defs.OccupancyOcTreeBase[defs.OcTreeNode].leaf_bbx_iterator(self.thisptr.end_leafs_bbx())
         itr.treeptr = self.thisptr
         return itr
 

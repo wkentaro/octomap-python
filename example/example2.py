@@ -16,8 +16,7 @@ if __name__ == "__main__":
     print "ProbHit: ", tree.getProbHit(), tree.getProbHitLog()
     print "ProbMiss: ", tree.getProbMiss(), tree.getProbMissLog()
 
-    itr = tree.begin_tree()
-    for i in itr:
+    for i in tree.begin_tree():
         print "Coordinate: ", i.getCoordinate()
         print "Size: ", i.getSize()
         print "Depth: ", i.getDepth()

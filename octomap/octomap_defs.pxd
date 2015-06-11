@@ -1,6 +1,12 @@
 from libcpp cimport bool
 from libcpp.string cimport string
 
+cdef extern from * nogil:
+    cdef T dynamic_cast[T](void *) except +   # nullptr may also indicate failure
+    cdef T static_cast[T](void *)
+    cdef T reinterpret_cast[T](void *)
+    cdef T const_cast[T](void *)
+
 cdef extern from "<iostream>" namespace "std":
     cdef cppclass istream:
         istream() except +
@@ -71,12 +77,14 @@ cdef extern from "include_and_setting.h" namespace "octomap":
             double getX() except +
             double getY() except +
             double getZ() except +
+            OcTreeNode& operator*()
+            bool operator==(iterator_base &other)
+            bool operator!=(iterator_base &other)
 
         cppclass tree_iterator(iterator_base):
             tree_iterator() except +
             tree_iterator(tree_iterator&) except +
             tree_iterator& operator++()
-            OcTreeNode& operator*()
             bool operator==(tree_iterator &other)
             bool operator!=(tree_iterator &other)
             bool isLeaf() except +
@@ -85,9 +93,15 @@ cdef extern from "include_and_setting.h" namespace "octomap":
             leaf_iterator() except +
             leaf_iterator(leaf_iterator&) except +
             leaf_iterator& operator++()
-            OcTreeNode& operator*()
             bool operator==(leaf_iterator &other)
             bool operator!=(leaf_iterator &other)
+
+        cppclass leaf_bbx_iterator(iterator_base):
+            leaf_bbx_iterator() except +
+            leaf_bbx_iterator(leaf_bbx_iterator&) except +
+            leaf_bbx_iterator& operator++()
+            bool operator==(leaf_bbx_iterator &other)
+            bool operator!=(leaf_bbx_iterator &other)
 
 cdef extern from "include_and_setting.h" namespace "octomap":
     cdef cppclass OcTree:
@@ -119,6 +133,10 @@ cdef extern from "include_and_setting.h" namespace "octomap":
                               double maxrange, bool lazy_eval)
         OccupancyOcTreeBase[OcTreeNode].tree_iterator begin_tree(unsigned char maxDepth) except +
         OccupancyOcTreeBase[OcTreeNode].tree_iterator end_tree() except +
+        OccupancyOcTreeBase[OcTreeNode].leaf_iterator begin_leafs(unsigned char maxDepth) except +
+        OccupancyOcTreeBase[OcTreeNode].leaf_iterator end_leafs() except +
+        OccupancyOcTreeBase[OcTreeNode].leaf_bbx_iterator begin_leafs_bbx(point3d &min, point3d &max, unsigned char maxDepth) except +
+        OccupancyOcTreeBase[OcTreeNode].leaf_bbx_iterator end_leafs_bbx() except +
         point3d getBBXBounds()
         point3d getBBXCenter()
         point3d getBBXMax()
