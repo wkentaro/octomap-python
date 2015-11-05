@@ -1,0 +1,19 @@
+language: python
+python:
+  - 2.7
+install:
+  - sudo apt-get install python-numpy
+  - sudo pip install cython
+  - git clone git://github.com/OctoMap/octomap.git octomap_cpp
+  - cd octomap_cpp
+  - mkdir build
+  - cd build
+  - cmake ..
+  - sudo make install
+  - cd ../..
+before_script:
+  - export PYTHONPATH=$PYTHONPATH:$(pwd):/usr/local/lib/python2.7/dist-packages/
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+script:
+  - sudo python setup.py install
+  - cd test;python octomap_test.py
