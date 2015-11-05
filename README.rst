@@ -1,6 +1,9 @@
 python-octomap
 =========
 
+.. image:: https://travis-ci.org/neka-nat/python-octomap.svg?branch=master
+    :target: https://travis-ci.org/neka-nat/python-octomap
+
 About
 -----
 This library is a Python binding of Octomap library.
