@@ -3,6 +3,7 @@ from libcpp cimport bool as cppbool
 from libc.string cimport memcpy
 from cython.operator cimport dereference as deref, preincrement as inc, address
 cimport octomap_defs as defs
+cimport dynamicEDT3D_defs as edt
 import numpy as np
 cimport numpy as np
 ctypedef np.float64_t DOUBLE_t
@@ -354,6 +355,7 @@ cdef class OcTree:
     octomap main map data structure, stores 3D occupancy grid map in an OcTree.
     """
     cdef defs.OcTree *thisptr
+    cdef edt.DynamicEDTOctomap *edtptr
     def __cinit__(self, arg):
         import numbers
         if isinstance(arg, numbers.Number):
@@ -364,6 +366,8 @@ cdef class OcTree:
     def __dealloc__(self):
         if self.thisptr:
             del self.thisptr
+        if self.edtptr:
+            del self.edtptr
 
     def adjustKeyAtDepth(self, OcTreeKey key, depth):
         cdef defs.OcTreeKey key_in = defs.OcTreeKey()
@@ -787,3 +791,44 @@ cdef class OcTree:
         cdef double z = 0
         self.thisptr.getMetricMax(x, y, z)
         return (x, y, z)
+
+    def dynamicEDT_generate(self, maxdist,
+                            np.ndarray[DOUBLE_t, ndim=1] bbx_min,
+                            np.ndarray[DOUBLE_t, ndim=1] bbx_max,
+                            treatUnknownAsOccupied=False):
+        self.edtptr = new edt.DynamicEDTOctomap(<float?>maxdist,
+                                                self.thisptr,
+                                                defs.point3d(bbx_min[0], bbx_min[1], bbx_min[2]),
+                                                defs.point3d(bbx_max[0], bbx_max[1], bbx_max[2]),
+                                                <cppbool?>treatUnknownAsOccupied)
+
+    def dynamicEDT_checkConsistency(self):
+        if self.edtptr:
+            return self.edtptr.checkConsistency()
+        else:
+            raise NullPointerException
+
+    def dynamicEDT_update(self, updateRealDist):
+        if self.edtptr:
+            return self.edtptr.update(<cppbool?>updateRealDist)
+        else:
+            raise NullPointerException
+
+    def dynamicEDT_getMaxDist(self):
+        if self.edtptr:
+            return self.edtptr.getMaxDist()
+        else:
+            raise NullPointerException
+
+    def dynamicEDT_getDistance(self, p):
+        if self.edtptr:
+            if isinstance(p, OcTreeKey):
+                return self.edtptr.getDistance(edt.OcTreeKey(<unsigned short int>p[0],
+                                                             <unsigned short int>p[1],
+                                                             <unsigned short int>p[2]))
+            else:
+                return self.edtptr.getDistance(edt.point3d(<float?>p[0],
+                                                           <float?>p[1],
+                                                           <float?>p[2]))
+        else:
+            raise NullPointerException

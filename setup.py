@@ -38,6 +38,7 @@ setup(
         include_dirs = include_dirs,
         library_dirs = lib_dirs,
         libraries=[
+                "dynamicedt3d",
                 "octomap",
                 "octomath"
                 ],
