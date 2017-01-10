@@ -88,5 +88,41 @@ class OctreeTestCase(unittest.TestCase):
         self.assertEqual(len(nodes), len(leafs))
         self.assertEqual(len(leafs_bbx), 2)
 
+    def test_castRay(self):
+        origin = np.array([0.0, 0.0, 0.0])
+        direction = np.array([1.0, 0.0, 0.0])
+        end = np.array([0.0, 0.0, 0.0])
+
+        # miss
+        hit = self.tree.castRay(
+            origin=origin,
+            direction=direction,
+            end=end,
+            ignoreUnknownCells=True,
+        )
+        self.assertFalse(hit)
+        self.assertTrue(np.all(end == 0.0))
+
+        self.tree.insertPointCloud(
+            np.array([
+                [1.0, 0.0 , 0.0],
+                [0.0, 0.0, 1.0],
+                [-1.0, 0.0, 0.0],
+                [0.0, 0.0, -1.0]
+            ]),
+            np.array([0.0, 0.0, 0.0])
+        )
+
+        # hit
+        hit = self.tree.castRay(
+            origin=origin,
+            direction=direction,
+            end=end,
+            ignoreUnknownCells=True,
+        )
+        self.assertTrue(hit)
+        self.assertTrue(np.allclose(end, [1.05, 0.05, 0.05]))
+
+
 if __name__ == "__main__":
     unittest.main()
