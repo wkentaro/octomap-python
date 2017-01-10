@@ -447,11 +447,19 @@ cdef class OcTree:
         If the starting coordinate is already occupied in the tree,
         this coordinate will be returned as a hit.
         """
-        return self.thisptr.castRay(defs.point3d(origin[0], origin[1], origin[2]),
-                                    defs.point3d(direction[0], direction[1], direction[2]),
-                                    defs.point3d(end[0], end[1], end[2]),
-                                    bool(ignoreUnknownCells),
-                                    <double?>maxRange)
+        cdef defs.point3d e
+        cdef cppbool hit
+        hit = self.thisptr.castRay(
+            defs.point3d(origin[0], origin[1], origin[2]),
+            defs.point3d(direction[0], direction[1], direction[2]),
+            e,
+            bool(ignoreUnknownCells),
+            <double?>maxRange
+        )
+        if hit:
+            end[0:3] = e.x(), e.y(), e.z()
+        return hit
+
     read = _octree_read
 
     def write(self, filename=None):
@@ -810,7 +818,7 @@ cdef class OcTree:
 
     def dynamicEDT_update(self, updateRealDist):
         if self.edtptr:
-            return self.edtptr.update(<cppbool?>updateRealDist)
+            self.edtptr.update(<cppbool?>updateRealDist)
         else:
             raise NullPointerException
 
