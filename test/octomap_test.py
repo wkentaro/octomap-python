@@ -123,6 +123,48 @@ class OctreeTestCase(unittest.TestCase):
         self.assertTrue(hit)
         self.assertTrue(np.allclose(end, [1.05, 0.05, 0.05]))
 
+    def test_updateNodes(self):
+        # test points
+        test_point1 = np.array([1.0, 2.0, 3.0])
+        test_point2 = np.array([0.0, 0.0, 0.0])
+        test_point3 = np.array([5.0, 5.0, 5.0])
+
+        # *not* present
+        node1 = self.tree.search(test_point1)
+        node2 = self.tree.search(test_point2)
+        node3 = self.tree.search(test_point3)
+        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node1))
+        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node2))
+        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node3))
+
+        # batch update w/ test points
+        self.tree.updateNodes([test_point1, test_point2, test_point3], True)
+
+        # occupied
+        node1 = self.tree.search(test_point1)
+        node2 = self.tree.search(test_point2)
+        node3 = self.tree.search(test_point3)
+        self.assertTrue(self.tree.isNodeOccupied(node1))
+        self.assertTrue(self.tree.isNodeOccupied(node2))
+        self.assertTrue(self.tree.isNodeOccupied(node3))
+
+    def test_insertDiscretizedPointCloud(self):
+        test_point1 = np.array([1.0, 2.0, 3.0])
+        test_point2 = np.array([0.0, 0.0, 0.0])
+        test_point3 = np.array([5.0, 5.0, 5.0])
+
+        self.tree.insertPointCloud(np.array([test_point1]),
+                                   np.array([0.0, 0.0, 0.0]),
+                                   discretize=True)
+
+        node1 = self.tree.search(test_point1)
+        node2 = self.tree.search(test_point2)
+        node3 = self.tree.search(test_point3)
+
+        self.assertTrue(self.tree.isNodeOccupied(node1))
+        self.assertFalse(self.tree.isNodeOccupied(node2))
+        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node3))
+
 
 if __name__ == "__main__":
     unittest.main()
