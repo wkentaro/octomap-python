@@ -517,7 +517,8 @@ cdef class OcTree:
                          np.ndarray[DOUBLE_t, ndim=2] pointcloud,
                          np.ndarray[DOUBLE_t, ndim=1] origin,
                          maxrange=-1.,
-                         lazy_eval=False):
+                         lazy_eval=False,
+                         discretize=False):
         """
         Integrate a Pointcloud (in global reference frame), parallelized with OpenMP.
 
@@ -541,7 +542,8 @@ cdef class OcTree:
                                                    <float>origin[1],
                                                    <float>origin[2]),
                                       <double?>maxrange,
-                                      bool(lazy_eval))
+                                      bool(lazy_eval),
+                                      bool(discretize))
 
     def begin_tree(self, maxDepth=0):
         itr = tree_iterator()
@@ -685,6 +687,43 @@ cdef class OcTree:
         setting their occupancy to the corresponding occupancy thresholds.
         """
         self.thisptr.toMaxLikelihood()
+
+    def updateNodes(self, values, update, lazy_eval=False):
+        """
+        Integrate occupancy measurements and Manipulate log_odds value of voxel directly. 
+        """
+        if values is None or len(values) == 0:
+            return
+        if isinstance(values[0], OcTreeKey):
+            if isinstance(update, bool):
+                for v in values:
+                    self.thisptr.updateNode(defs.OcTreeKey(<unsigned short int>v[0],
+                                                           <unsigned short int>v[1],
+                                                           <unsigned short int>v[2]),
+                                            <cppbool>update,
+                                            <cppbool?>lazy_eval)
+            else:
+                for v in values:
+                    self.thisptr.updateNode(defs.OcTreeKey(<unsigned short int>v[0],
+                                                           <unsigned short int>v[1],
+                                                           <unsigned short int>v[2]),
+                                            <float?>update,
+                                            <cppbool?>lazy_eval)
+        else:
+            if isinstance(update, bool):
+                for v in values:
+                    self.thisptr.updateNode(<double?>v[0],
+                                            <double?>v[1],
+                                            <double?>v[2],
+                                            <cppbool>update,
+                                            <cppbool?>lazy_eval)
+            else:
+                for v in values:
+                    self.thisptr.updateNode(<double?>v[0],
+                                            <double?>v[1],
+                                            <double?>v[2],
+                                            <float?>update,
+                                            <cppbool?>lazy_eval)
 
     def updateNode(self, value, update, lazy_eval=False):
         """
