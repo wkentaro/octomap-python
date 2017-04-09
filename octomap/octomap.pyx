@@ -53,14 +53,6 @@ cdef class OcTreeNode:
         pass
     def __dealloc__(self):
         pass
-    def createChild(self, unsigned int i):
-        """
-        initialize i-th child, allocate children array if needed
-        """
-        if self.thisptr:
-            return self.thisptr.createChild(i)
-        else:
-            raise NullPointerException
     def addValue(self, float p):
         """
         adds p to the node's logOdds value (with no boundary / threshold checking!)
@@ -93,18 +85,6 @@ cdef class OcTreeNode:
             return self.thisptr.getOccupancy()
         else:
             raise NullPointerException
-    def expandNode(self):
-        if self.thisptr:
-            self.thisptr.expandNode()
-        else:
-            raise NullPointerException
-    def getChild(self, unsigned int i):
-        node = OcTreeNode()
-        if self.thisptr:
-            node.thisptr = self.thisptr.getChild(i)
-            return node
-        else:
-            raise NullPointerException
     def getLogOdds(self):
         if self.thisptr:
             return self.thisptr.getLogOdds()
@@ -118,28 +98,6 @@ cdef class OcTreeNode:
     def hasChildren(self):
         if self.thisptr:
             return self.thisptr.hasChildren()
-        else:
-            raise NullPointerException
-    def collapsible(self):
-        """
-        A node is collapsible if all children exist,
-        don't have children of their own and have the same occupancy value.
-        """
-        if self.thisptr:
-            return self.thisptr.collapsible()
-        else:
-            raise NullPointerException
-    def deleteChild(self, unsigned int i):
-        """
-        Deletes the i-th child of the node.
-        """
-        if self.thisptr:
-            self.thisptr.deleteChild(i)
-        else:
-            raise NullPointerException
-    def pruneNode(self):
-        if self.thisptr:
-            return self.thisptr.pruneNode()
         else:
             raise NullPointerException
 
@@ -838,6 +796,28 @@ cdef class OcTree:
         cdef double z = 0
         self.thisptr.getMetricMax(x, y, z)
         return (x, y, z)
+
+    def expandNode(self, node):
+        self.thisptr.expandNode((<OcTreeNode>node).thisptr)
+
+    def createNodeChild(self, node, int idx):
+        child = OcTreeNode()
+        child.thisptr = self.thisptr.createNodeChild((<OcTreeNode>node).thisptr, idx)
+        return child
+
+    def getNodeChild(self, node, int idx):
+        child = OcTreeNode()
+        child.thisptr = self.thisptr.getNodeChild((<OcTreeNode>node).thisptr, idx)
+        return child
+
+    def isNodeCollapsible(self, node):
+        return self.thisptr.isNodeCollapsible((<OcTreeNode>node).thisptr)
+
+    def deleteNodeChild(self, node, int idx):
+        self.thisptr.deleteNodeChild((<OcTreeNode>node).thisptr, idx)
+
+    def pruneNode(self, node):
+        return self.thisptr.pruneNode((<OcTreeNode>node).thisptr)
 
     def dynamicEDT_generate(self, maxdist,
                             np.ndarray[DOUBLE_t, ndim=1] bbx_min,

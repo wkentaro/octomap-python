@@ -6,7 +6,7 @@ install:
   - sudo pip install cython
   - git clone git://github.com/OctoMap/octomap.git octomap_cpp
   - cd octomap_cpp
-  - git checkout v1.7.2
+  - git checkout v1.8.0
   - mkdir build
   - cd build
   - cmake ..

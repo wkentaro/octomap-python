@@ -56,7 +56,7 @@ class OctreeTestCase(unittest.TestCase):
         self.assertEqual(node.childExists(5), False)
         self.assertEqual(node.childExists(6), False)
         self.assertEqual(node.childExists(7), True)
-        self.assertAlmostEqual(node.getChild(7).getValue(), 0.847298, places=5)
+        self.assertAlmostEqual(self.tree.getNodeChild(node, 7).getValue(), 0.847298, places=5)
 
     def test_Update(self):
         test_point1 = np.array([1.0, 2.0, 3.0])

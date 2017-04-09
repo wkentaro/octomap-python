@@ -15,6 +15,9 @@ for prefix in ['darwin', 'linux', 'bsd']:
             '/usr/lib',
             '/usr/local/lib',
         ]
+        if 'ROS_ROOT' in os.environ:
+            include_dirs += [os.path.join(os.environ['ROS_ROOT'], '../../include')]
+            lib_dirs += [os.path.join(os.environ['ROS_ROOT'], '../../lib')]
         if 'CPATH' in os.environ:
             include_dirs += os.environ['CPATH'].split(':')
         if 'LD_LIBRARY_PATH' in os.environ:

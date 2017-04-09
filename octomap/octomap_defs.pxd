@@ -44,20 +44,15 @@ cdef extern from "octomap/Pointcloud.h" namespace "octomap":
 cdef extern from "octomap/OcTreeNode.h" namespace "octomap":
     cdef cppclass OcTreeNode:
         OcTreeNode() except +
-        bool createChild(unsigned int i)
         void addValue(float& p)
         bool childExists(unsigned int i)
         float getValue()
         void setValue(float v)
         double getOccupancy()
-        void expandNode()
         OcTreeNode* getChild(unsigned int i)
         float getLogOdds()
         void setLogOdds(float l)
         bool hasChildren()
-        bool collapsible()
-        void deleteChild(unsigned int i)
-        bool pruneNode()
 
 cdef extern from "octomap/OcTreeKey.h" namespace "octomap":
     cdef cppclass OcTreeKey:
@@ -190,3 +185,10 @@ cdef extern from "include_and_setting.h" namespace "octomap":
         void getMetricSize(double& x, double& y, double& z)
         void getMetricMin(double& x, double& y, double& z)
         void getMetricMax(double& x, double& y, double& z)
+
+        void expandNode(OcTreeNode* node)
+        OcTreeNode* createNodeChild(OcTreeNode *node, unsigned int childIdx)
+        OcTreeNode* getNodeChild(OcTreeNode *node, unsigned int childIdx)
+        bool isNodeCollapsible(const OcTreeNode* node)
+        void deleteNodeChild(OcTreeNode *node, unsigned int childIdx)
+        bool pruneNode(OcTreeNode *node)
