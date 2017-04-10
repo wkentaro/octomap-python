@@ -1,9 +1,12 @@
 language: python
 python:
   - 2.7
+addons:
+  apt:
+    packages:
+      - python-numpy
 install:
-  - sudo apt-get install python-numpy
-  - sudo pip install cython
+  - sudo pip install 'cython==0.23.4'
   - git clone git://github.com/OctoMap/octomap.git octomap_cpp
   - cd octomap_cpp
   - git checkout v1.8.0
