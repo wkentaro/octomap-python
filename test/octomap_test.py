@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# coding: utf8
 import octomap
 import numpy as np
 import unittest
@@ -9,20 +11,20 @@ class OctreeTestCase(unittest.TestCase):
         pass
 
     def test_readBinary(self):
-        self.assertTrue(self.tree.readBinary("test.bt"))
-        self.assertFalse(self.tree.readBinary("test0.bt"))
+        self.assertTrue(self.tree.readBinary(b"test.bt"))
+        self.assertFalse(self.tree.readBinary(b"test0.bt"))
 
     def test_writeBinary(self):
-        self.assertTrue(self.tree.writeBinary("test1.bt"))
+        self.assertTrue(self.tree.writeBinary(b"test1.bt"))
 
     def test_checkTree(self):
-        self.tree.readBinary("test.bt")
+        self.tree.readBinary(b"test.bt")
         data = self.tree.write()
         tree2 = octomap.OcTree.read(data)
         self.assertEqual(tree2.write(), data)
 
     def test_checkBinary(self):
-        self.tree.readBinary("test.bt")
+        self.tree.readBinary(b"test.bt")
         data = self.tree.writeBinary()
         tree2 = octomap.OcTree(0.1)
         tree2.readBinary(data)

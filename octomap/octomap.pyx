@@ -298,7 +298,7 @@ def _octree_read(filename):
     """
     cdef defs.istringstream iss
     cdef OcTree tree = OcTree(0.1)
-    if filename.startswith("# Octomap OcTree file"):
+    if filename.startswith(b"# Octomap OcTree file"):
         iss.str(string(<char*?>filename, len(filename)))
         del tree.thisptr
         tree.thisptr = <defs.OcTree*>tree.thisptr.read(<defs.istream&?>iss)
@@ -436,7 +436,7 @@ cdef class OcTree:
 
     def readBinary(self, filename):
         cdef defs.istringstream iss
-        if filename.startswith("# Octomap OcTree binary file"):
+        if filename.startswith(b"# Octomap OcTree binary file"):
             iss.str(string(<char*?>filename, len(filename)))
             return self.thisptr.readBinary(<defs.istream&?>iss)
         else:

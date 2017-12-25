@@ -11,6 +11,6 @@ if __name__ == "__main__":
                                        [0.0, 0.0, -1.0]]),
                           numpy.array([0.0, 1.0, 0.0]))
     if tree.writeBinary("test.bt"):
-        print "Create octree file."
+        print("Create octree file.")
     else:
-        print "Cannot create octree file."
+        print("Cannot create octree file.")
