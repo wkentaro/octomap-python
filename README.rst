@@ -10,13 +10,24 @@ This library is a Python binding of Octomap library.
 
 Build
 -----
-Building **python-octomap requires Octomap headers and libraries**.
+Building **python-octomap requires Octomap and DynamicEDT3D libraries**.
 When building, you can specify their location with the --include-dirs
 and --library-dirs command line options:
 
+
     $ python setup.py build_ext --include-dirs /path/to/includes --library-dirs /path/to/libraries
 
-If you use ubuntu 12.04 and install ros-octomap at /opt directory, you can use the following command:
+If you use ubuntu 18.04, you can install the necessary libraries from apt:
+
+    $ sudo apt-get install liboctomap-dev libdynamicedt3d-dev
+
+    $ python setup.py build
+
+If you use ubuntu 18.04 and ROS melodic, you can also use the following command:
+
+    $ sudo apt-get install ros-melodic-octomap ros-melodic-dynamic-edt-3d
+
+    $ source /opt/ros/melodic/setup.bash
 
     $ python setup.py build
 
