@@ -1,6 +1,6 @@
 # python-octomap
 
-[![image](https://travis-ci.org/neka-nat/python-octomap.svg?branch=master)](https://travis-ci.org/neka-nat/python-octomap)
+[![Build Status](https://travis-ci.com/wkentaro/python-octomap.svg?branch=master)](https://travis-ci.com/wkentaro/python-octomap)
 
 ## Description
 
