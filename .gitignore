@@ -1,4 +1,5 @@
 /_skbuild/
+/MANIFEST
 
 /octomap/octomap.cpp
 /test/test1.bt
