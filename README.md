@@ -9,9 +9,6 @@ This library is a Python binding of Octomap library.
 ## Installation
 
 ```bash
-make install
-
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/src/octomap/lib
-python
->>> import octomap
+pip install -U setuptools
+pip install git+https://github.com/wkentaro/python-octomap.git
 ```
