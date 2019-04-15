@@ -63,8 +63,8 @@ def main():
     ]
 
     skbuild.setup(
-        name='octomap',
-        version='0.5',
+        name='octomap-python',
+        version='1.8.0',
         license='BSD',
         ext_modules=ext_modules,
         cmdclass={'build_ext': build_ext},
