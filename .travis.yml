@@ -1,38 +1,42 @@
+sudo: false
+
+dist: trusty
+
 language: python
-matrix:
-  include:
-    - os: linux
-      env:
-        - PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/dist-packages/
-        - PYTHON_EXEC=python
-        - PIP=pip
-      addons:
-        apt:
-          packages:
-            - python-numpy
-    - os: linux
-      env:
-        - PYTHONPATH=$PYTHONPATH:/usr/lib/python3.4/site-packages/
-        - PYTHON_EXEC=python3
-        - PIP=pip3
-      addons:
-        apt:
-          packages:
-            - python3
-            - python3-numpy
-            - python3-pip
+
+python:
+  - 3.6
+  - 2.7
+
+cache:
+  - pip
+
+notifications:
+  email: false
+
+branches:
+  only:
+    - master
+
+before_install:
+  # install miniconda
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+
 install:
-  - sudo $PIP install 'cython==0.27.3'
-  - git clone git://github.com/OctoMap/octomap.git octomap_cpp
-  - cd octomap_cpp
-  - git checkout v1.8.0
-  - mkdir build
-  - cd build
-  - cmake ..
-  - sudo make install
-  - cd ../..
+  - make install
+
 before_script:
-  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+  - pip install hacking pytest
+
 script:
-  - sudo $PYTHON_EXEC setup.py install
-  - cd test;$PYTHON_EXEC octomap_test.py
+  - flake8 octomap/
+  - (cd tests && pytest -v .)
