@@ -21,4 +21,4 @@ build_ext: build_octomap
 
 install: build_ext
 	@python setup.py install
-	@echo "\033[1m\nAll is well! You can start using this!\n\n  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(PWD)/src/octomap/lib\n  python -c 'import octomap'\n\033[0m"
+	@echo '\033[1m\nAll is well! You can start using this!\n\n  export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:$(PWD)/src/octomap/lib\n'"  python -c 'import octomap'\n\033[0m"
