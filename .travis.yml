@@ -32,10 +32,12 @@ before_install:
   - conda info -a
 
 install:
+  - pip install -U pip setuptools wheel
+  - pip install cython numpy scikit-build
   - pip install -vvv --no-cache-dir .
 
 before_script:
-  - pip install hacking pytest
+  - pip install -U hacking pytest
 
 script:
   - flake8 octomap/
