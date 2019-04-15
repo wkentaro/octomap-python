@@ -1,0 +1,4 @@
+[submodule "src/octomap"]
+	path = src/octomap
+	url = https://github.com/OctoMap/octomap.git
+	version = v1.8.0
