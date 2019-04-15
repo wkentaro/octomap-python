@@ -7,6 +7,7 @@ build_octomap:
 	@.make/build_octomap.sh
 
 build_ext: build_octomap
+	@pip install cython
 	@python setup.py build_ext -I src/octomap/octomap/include:src/octomap/dynamicEDT3D/include -L src/octomap/lib
 
 install: build_ext
