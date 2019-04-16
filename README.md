@@ -12,3 +12,8 @@ This library is a Python binding of Octomap library.
 pip install -U setuptools
 pip install octomap-python
 ```
+
+
+## Acknowledgement
+
+Fork of [neka-nat/python-octomap](https://github.com/neka-nat/python-octomap).
