@@ -32,6 +32,19 @@ def get_or_install(name, version=None):
         return package['version']
 
 
+def get_long_description():
+    with open('README.md') as f:
+        long_description = f.read()
+
+    try:
+        import github2pypi
+        return github2pypi.replace_url(
+            slug='wkentaro/octomap-python', content=long_description
+        )
+    except Exception:
+        return long_description
+
+
 def main():
     get_or_install('cython')
     get_or_install('numpy')
@@ -65,10 +78,26 @@ def main():
     skbuild.setup(
         name='octomap-python',
         version='1.8.0-1',
+        install_requires=['numpy'],
         license='BSD',
+        author='Kentaro Wada',
+        author_email='www.kentaro.wada@gmail.com',
+        url='https://github.com/wkentaro/octomap-python',
+        description='Python binding of the OctoMap library.',
+        long_description=get_long_description(),
+        long_description_content_type='text/markdown',
+        classifiers=[
+            'Development Status :: 5 - Production/Stable',
+            'Intended Audience :: Developers',
+            'Natural Language :: English',
+            'Programming Language :: Python',
+            'Programming Language :: Python :: 2',
+            'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: Implementation :: CPython',
+            'Programming Language :: Python :: Implementation :: PyPy',
+        ],
         ext_modules=ext_modules,
         cmdclass={'build_ext': build_ext},
-        cmake_args=[],
         cmake_source_dir='src/octomap',
     )
 
