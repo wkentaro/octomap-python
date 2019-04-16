@@ -77,7 +77,7 @@ def main():
 
     skbuild.setup(
         name='octomap-python',
-        version='1.8.0-1',
+        version='1.8.0-2',
         install_requires=['numpy'],
         license='BSD',
         author='Kentaro Wada',
