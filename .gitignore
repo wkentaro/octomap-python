@@ -3,3 +3,6 @@
 
 /octomap/octomap.cpp
 /test/test1.bt
+
+/src/
+!/src/octomap
