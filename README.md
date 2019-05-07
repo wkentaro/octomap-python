@@ -15,6 +15,19 @@ pip install octomap-python
 ```
 
 
+## Example
+
+```bash
+git clone https://github.com/wkentaro/octomap-python.git && cd octomap-python
+pip install -e '.[example]'
+
+cd examples
+python insertPointCloud.py
+```
+
+<img src="examples/.readme/insertPointCloud.jpg" height="200px" />
+
+
 ## Acknowledgement
 
 This is a fork of [neka-nat/python-octomap](https://github.com/neka-nat/python-octomap).

@@ -79,6 +79,9 @@ def main():
         name='octomap-python',
         version='1.8.0-2',
         install_requires=['numpy'],
+        extras_require={
+            'example': ['glooey', 'imgviz', 'pyglet', 'trimesh[easy]'],
+        },
         license='BSD',
         maintainer='Kentaro Wada',
         maintainer_email='www.kentaro.wada@gmail.com',
