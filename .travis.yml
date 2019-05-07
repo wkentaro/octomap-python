@@ -40,4 +40,4 @@ before_script:
 
 script:
   - flake8 octomap/
-  - (cd test && pytest -v .)
+  - (cd tests && pytest -v .)
