@@ -39,5 +39,5 @@ before_script:
   - pip install -U hacking pytest
 
 script:
-  - flake8 octomap/
+  - flake8 .
   - (cd tests && pytest -v .)
