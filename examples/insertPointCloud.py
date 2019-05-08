@@ -57,18 +57,7 @@ def main():
         origin=np.array([0, 0, 0], dtype=float),
         maxrange=2,
     )
-    root = octree.begin_tree()
-    occupied = []
-    empty = []
-    for node in root:
-        if node.isLeaf():
-            coord = node.getCoordinate()
-            if octree.isNodeOccupied(node):
-                occupied.append(coord)
-            else:
-                empty.append(coord)
-    occupied = np.array(occupied)
-    empty = np.array(empty)
+    occupied, empty = octree.extractPointCloud()
 
     # -------------------------------------------------------------------------
 

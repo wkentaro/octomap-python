@@ -471,6 +471,19 @@ cdef class OcTree:
         else:
             return self.thisptr.isNodeAtThreshold(<defs.OcTreeNode>deref(deref((<tree_iterator>node).thisptr)))
 
+    def extractPointCloud(self):
+        cdef list occupied = []
+        cdef list empty = []
+        cdef leaf_iterator it
+        for it in self.begin_leafs():
+            if self.isNodeOccupied(it):
+                occupied.append(it.getCoordinate())
+            else:
+                empty.append(it.getCoordinate())
+        cdef np.ndarray[DOUBLE_t, ndim=2] occupied_arr = np.array(occupied, dtype=float)
+        cdef np.ndarray[DOUBLE_t, ndim=2] empty_arr = np.array(empty, dtype=float)
+        return occupied_arr, empty_arr
+
     def insertPointCloud(self,
                          np.ndarray[DOUBLE_t, ndim=2] pointcloud,
                          np.ndarray[DOUBLE_t, ndim=1] origin,
