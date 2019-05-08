@@ -794,21 +794,21 @@ cdef class OcTree:
         cdef double y = 0
         cdef double z = 0
         self.thisptr.getMetricSize(x, y, z)
-        return (x, y, z)
+        return np.array([x, y, z], dtype=float)
 
     def getMetricMin(self):
         cdef double x = 0
         cdef double y = 0
         cdef double z = 0
         self.thisptr.getMetricMin(x, y, z)
-        return (x, y, z)
+        return np.array([x, y, z], dtype=float)
 
     def getMetricMax(self):
         cdef double x = 0
         cdef double y = 0
         cdef double z = 0
         self.thisptr.getMetricMax(x, y, z)
-        return (x, y, z)
+        return np.array([x, y, z], dtype=float)
 
     def expandNode(self, node):
         self.thisptr.expandNode((<OcTreeNode>node).thisptr)
