@@ -57,6 +57,7 @@ def main():
         pcd=pcd,
         mask=mask,
         resolution=resolution,
+        aabb=(aabb_min, aabb_max),
     )
 
 

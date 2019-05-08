@@ -38,7 +38,9 @@ def labeled_scene_widget(scene, label):
     return vbox
 
 
-def visualize(occupied, empty, K, width, height, rgb, pcd, mask, resolution):
+def visualize(
+    occupied, empty, K, width, height, rgb, pcd, mask, resolution, aabb
+):
     window = pyglet.window.Window(
         width=int(640 * 0.9 * 3), height=int(480 * 0.9)
     )
@@ -68,20 +70,26 @@ def visualize(occupied, empty, K, width, height, rgb, pcd, mask, resolution):
          [0.,          0.,          0.,          1., ]],
     )
 
+    aabb_min, aabb_max = aabb
+    bbox = trimesh.path.creation.box_outline(
+        aabb_max - aabb_min,
+        tf.translation_matrix((aabb_min + aabb_max) / 2),
+    )
+
     geom = trimesh.PointCloud(vertices=pcd[mask], colors=rgb[mask])
-    scene = trimesh.Scene(camera=camera, geometry=[geom, camera_marker])
+    scene = trimesh.Scene(camera=camera, geometry=[bbox, geom, camera_marker])
     hbox.add(labeled_scene_widget(scene, label='pointcloud'))
 
     geom = trimesh.voxel.multibox(
         occupied, pitch=resolution, colors=[1., 0, 0, 0.5]
     )
-    scene = trimesh.Scene(camera=camera, geometry=[geom, camera_marker])
+    scene = trimesh.Scene(camera=camera, geometry=[bbox, geom, camera_marker])
     hbox.add(labeled_scene_widget(scene, label='occupied'))
 
     geom = trimesh.voxel.multibox(
         empty, pitch=resolution, colors=[0.5, 0.5, 0.5, 0.5]
     )
-    scene = trimesh.Scene(camera=camera, geometry=[geom, camera_marker])
+    scene = trimesh.Scene(camera=camera, geometry=[bbox, geom, camera_marker])
     hbox.add(labeled_scene_widget(scene, label='empty'))
 
     gui.add(hbox)
@@ -109,6 +117,9 @@ def main():
     )
     occupied, empty = octree.extractPointCloud()
 
+    aabb_min = octree.getMetricMin()
+    aabb_max = octree.getMetricMax()
+
     visualize(
         occupied=occupied,
         empty=empty,
@@ -119,6 +130,7 @@ def main():
         pcd=pcd,
         mask=mask,
         resolution=resolution,
+        aabb=(aabb_min, aabb_max),
     )
 
 
