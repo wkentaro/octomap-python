@@ -471,6 +471,23 @@ cdef class OcTree:
         else:
             return self.thisptr.isNodeAtThreshold(<defs.OcTreeNode>deref(deref((<tree_iterator>node).thisptr)))
 
+    def getLabels(self, np.ndarray[DOUBLE_t, ndim=2] points):
+        cdef int i
+        cdef np.ndarray[DOUBLE_t, ndim=1] pt
+        cdef OcTreeKey key
+        cdef OcTreeNode node
+        # -1: unknown, 0: empty, 1: occupied
+        cdef np.ndarray[np.int32_t, ndim=1] labels = \
+            np.full((points.shape[0],), -1, dtype=np.int32)
+        for i, pt in enumerate(points):
+            key = self.coordToKey(pt)
+            node = self.search(key)
+            try:
+                labels[i] = self.isNodeOccupied(node)
+            except NullPointerException:
+                pass
+        return labels
+
     def extractPointCloud(self):
         cdef list occupied = []
         cdef list empty = []
