@@ -38,29 +38,7 @@ def labeled_scene_widget(scene, label):
     return vbox
 
 
-def main():
-    data = imgviz.data.arc2017()
-    camera_info = data['camera_info'][()]
-    K = np.array(camera_info['K']).reshape(3, 3)
-    rgb = data['rgb']
-    pcd = pointcloud_from_depth(
-        data['depth'], fx=K[0, 0], fy=K[1, 1], cx=K[0, 2], cy=K[1, 2]
-    )
-
-    nonnan = ~np.isnan(pcd).any(axis=2)
-    mask = np.less(pcd[:, :, 2], 2)
-
-    resolution = 0.01
-    octree = octomap.OcTree(resolution)
-    octree.insertPointCloud(
-        pointcloud=pcd[nonnan],
-        origin=np.array([0, 0, 0], dtype=float),
-        maxrange=2,
-    )
-    occupied, empty = octree.extractPointCloud()
-
-    # -------------------------------------------------------------------------
-
+def visualize(occupied, empty, K, width, height, rgb, pcd, mask, resolution):
     window = pyglet.window.Window(
         width=int(640 * 0.9 * 3), height=int(480 * 0.9)
     )
@@ -76,7 +54,7 @@ def main():
     hbox.set_padding(5)
 
     camera = trimesh.scene.Camera(
-        resolution=(camera_info['width'], camera_info['height']),
+        resolution=(width, height),
         focal=(K[0, 0], K[1, 1]),
         transform=np.eye(4),
     )
@@ -108,6 +86,40 @@ def main():
 
     gui.add(hbox)
     pyglet.app.run()
+
+
+def main():
+    data = imgviz.data.arc2017()
+    camera_info = data['camera_info'][()]
+    K = np.array(camera_info['K']).reshape(3, 3)
+    rgb = data['rgb']
+    pcd = pointcloud_from_depth(
+        data['depth'], fx=K[0, 0], fy=K[1, 1], cx=K[0, 2], cy=K[1, 2]
+    )
+
+    nonnan = ~np.isnan(pcd).any(axis=2)
+    mask = np.less(pcd[:, :, 2], 2)
+
+    resolution = 0.01
+    octree = octomap.OcTree(resolution)
+    octree.insertPointCloud(
+        pointcloud=pcd[nonnan],
+        origin=np.array([0, 0, 0], dtype=float),
+        maxrange=2,
+    )
+    occupied, empty = octree.extractPointCloud()
+
+    visualize(
+        occupied=occupied,
+        empty=empty,
+        K=K,
+        width=camera_info['width'],
+        height=camera_info['height'],
+        rgb=rgb,
+        pcd=pcd,
+        mask=mask,
+        resolution=resolution,
+    )
 
 
 if __name__ == '__main__':
