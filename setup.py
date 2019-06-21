@@ -63,10 +63,13 @@ def main():
                 'src/octomap/dynamicEDT3D/include',
                 numpy.get_include(),
             ],
-            extra_objects=[
-                'src/octomap/lib/libdynamicedt3d.a',
-                'src/octomap/lib/liboctomap.a',
-                'src/octomap/lib/liboctomath.a',
+            library_dirs=[
+                'src/octomap/lib',
+            ],
+            libraries=[
+                'dynamicedt3d',
+                'octomap',
+                'octomath',
             ],
             language='c++',
         )
