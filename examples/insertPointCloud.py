@@ -25,12 +25,6 @@ def pointcloud_from_depth(depth, fx, fy, cx, cy):
     return pc
 
 
-def opengl_camera_transform(transform=None):
-    if transform is None:
-        transform = np.eye(4)
-    return transform @ tf.rotation_matrix(np.deg2rad(-180), [1, 0, 0])
-
-
 def labeled_scene_widget(scene, label):
     vbox = glooey.VBox()
     vbox.add(glooey.Label(text=label, color=(255, 255, 255)), size=0)
