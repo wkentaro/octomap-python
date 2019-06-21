@@ -501,10 +501,12 @@ cdef class OcTree:
         cdef np.ndarray[DOUBLE_t, ndim=2] empty_arr
         if len(occupied) == 0:
             occupied_arr = np.zeros((0, 3), dtype=float)
+        else:
+            occupied_arr = np.array(occupied, dtype=float)
         if len(empty) == 0:
             empty_arr = np.zeros((0, 3), dtype=float)
-        occupied_arr = np.array(occupied, dtype=float)
-        empty_arr = np.array(empty, dtype=float)
+        else:
+            empty_arr = np.array(empty, dtype=float)
         return occupied_arr, empty_arr
 
     def insertPointCloud(self,
