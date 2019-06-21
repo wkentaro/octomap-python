@@ -77,7 +77,7 @@ def main():
 
     skbuild.setup(
         name='octomap-python',
-        version='1.8.0.post6',
+        version='1.8.0.post7',
         install_requires=['numpy'],
         extras_require={
             'example': ['glooey', 'imgviz', 'pyglet', 'trimesh[easy]'],
