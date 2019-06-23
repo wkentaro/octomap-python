@@ -488,25 +488,61 @@ cdef class OcTree:
                 pass
         return labels
 
-    def extractPointCloud(self):
+    def extractPointCloud(
+        self,
+        np.ndarray[DOUBLE_t, ndim=1] bbx_min=None,
+        np.ndarray[DOUBLE_t, ndim=1] bbx_max=None,
+    ):
+        cdef float resolution = self.getResolution()
+        if bbx_min is None:
+            bbx_min = np.full((3,), - np.inf, dtype=float)
+        if bbx_max is None:
+            bbx_max = np.full((3,), np.inf, dtype=float)
+        bbx_min = bbx_min - resolution
+        bbx_max = bbx_max + resolution
+
         cdef list occupied = []
         cdef list empty = []
         cdef leaf_iterator it
+        cdef float size
+        cdef int is_occupied
+        cdef np.ndarray[DOUBLE_t, ndim=1] center
+        cdef np.ndarray[DOUBLE_t, ndim=1] origin
+        cdef np.ndarray[np.int64_t, ndim=2] indices
+        cdef np.ndarray[DOUBLE_t, ndim=2] points
+        cdef np.ndarray keep
+        cdef int dimension
         for it in self.begin_leafs():
-            if self.isNodeOccupied(it):
-                occupied.append(it.getCoordinate())
+            is_occupied = self.isNodeOccupied(it)
+            size = it.getSize()
+            center = it.getCoordinate()
+
+            if not np.all((bbx_min <= center) & (center < bbx_max)):
+                continue
+
+            dimension = it.getSize() / resolution
+            origin = center - (dimension / 2 - 0.5) * resolution
+            indices = np.column_stack(np.nonzero(np.ones((dimension, dimension, dimension))))
+            points = origin + indices * np.array(resolution)
+            keep = ((bbx_min <= points) & (points < bbx_max)).all(axis=1)
+            if keep.sum() == 0:
+                continue
+
+            if is_occupied:
+                occupied.append(points[keep])
             else:
-                empty.append(it.getCoordinate())
+                empty.append(points[keep])
+
         cdef np.ndarray[DOUBLE_t, ndim=2] occupied_arr
         cdef np.ndarray[DOUBLE_t, ndim=2] empty_arr
         if len(occupied) == 0:
             occupied_arr = np.zeros((0, 3), dtype=float)
         else:
-            occupied_arr = np.array(occupied, dtype=float)
+            occupied_arr = np.concatenate(occupied, axis=0)
         if len(empty) == 0:
             empty_arr = np.zeros((0, 3), dtype=float)
         else:
-            empty_arr = np.array(empty, dtype=float)
+            empty_arr = np.concatenate(empty, axis=0)
         return occupied_arr, empty_arr
 
     def insertPointCloud(self,
