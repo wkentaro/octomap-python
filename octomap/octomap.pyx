@@ -520,7 +520,7 @@ cdef class OcTree:
             if not np.all((bbx_min <= center) & (center < bbx_max)):
                 continue
 
-            dimension = it.getSize() / resolution
+            dimension = max(1, round(it.getSize() / resolution))
             origin = center - (dimension / 2 - 0.5) * resolution
             indices = np.column_stack(np.nonzero(np.ones((dimension, dimension, dimension))))
             points = origin + indices * np.array(resolution)
