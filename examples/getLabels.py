@@ -13,7 +13,7 @@ from insertPointCloud import visualize
 
 def main():
     data = imgviz.data.arc2017()
-    camera_info = data['camera_info'][()]
+    camera_info = data['camera_info']
     K = np.array(camera_info['K']).reshape(3, 3)
     rgb = data['rgb']
     pcd = pointcloud_from_depth(
@@ -41,7 +41,10 @@ def main():
     aabb_max = origin + dimension * resolution + resolution / 2
 
     grid = np.full(dimension, -1, np.int32)
-    points = trimesh.voxel.matrix_to_points(grid, resolution, origin)
+    transform = trimesh.transformations.scale_and_translate(
+        scale=resolution, translate=origin
+    )
+    points = trimesh.voxel.VoxelGrid(encoding=grid, transform=transform).points
     labels = octree.getLabels(points)
 
     occupied = points[labels == 1]

@@ -80,7 +80,7 @@ def main():
         version='1.8.0.post12',
         install_requires=['numpy'],
         extras_require={
-            'example': ['glooey', 'imgviz', 'pyglet', 'trimesh[easy]'],
+            'example': ['glooey', 'imgviz>=1.2.0', 'pyglet', 'trimesh[easy]'],
         },
         license='BSD',
         maintainer='Kentaro Wada',
