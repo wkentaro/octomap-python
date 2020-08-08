@@ -18,7 +18,7 @@ pip install octomap-python
 ## Example
 
 ```bash
-git clone https://github.com/wkentaro/octomap-python.git && cd octomap-python
+git clone --recursive https://github.com/wkentaro/octomap-python.git && cd octomap-python
 pip install -e '.[example]'
 
 cd examples
