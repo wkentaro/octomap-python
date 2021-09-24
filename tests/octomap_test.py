@@ -1,12 +1,14 @@
-#!/usr/bin/python
-# coding: utf8
-import octomap
-import numpy as np
 import unittest
+
+import numpy as np
+
+import octomap
+
 
 class OctreeTestCase(unittest.TestCase):
     def setUp(self):
         self.tree = octomap.OcTree(0.1)
+
     def tearDown(self):
         pass
 
@@ -46,8 +48,9 @@ class OctreeTestCase(unittest.TestCase):
         self.assertAlmostEqual(self.tree.getResolution(), r)
 
     def test_Node(self):
-        self.tree.insertPointCloud(np.array([[1.0, 0.0 ,0.0]]),
-                                   np.array([0.0, 0.0, 0.0]))
+        self.tree.insertPointCloud(
+            np.array([[1.0, 0.0, 0.0]]), np.array([0.0, 0.0, 0.0])
+        )
         node = self.tree.getRoot()
         self.assertAlmostEqual(node.getValue(), 0.847298, places=5)
         self.assertEqual(node.childExists(0), False)
@@ -58,35 +61,51 @@ class OctreeTestCase(unittest.TestCase):
         self.assertEqual(node.childExists(5), False)
         self.assertEqual(node.childExists(6), False)
         self.assertEqual(node.childExists(7), True)
-        self.assertAlmostEqual(self.tree.getNodeChild(node, 7).getValue(), 0.847298, places=5)
+        self.assertAlmostEqual(
+            self.tree.getNodeChild(node, 7).getValue(), 0.847298, places=5
+        )
 
     def test_Update(self):
         test_point1 = np.array([1.0, 2.0, 3.0])
         test_point2 = np.array([0.0, 0.0, 0.0])
         test_point3 = np.array([5.0, 5.0, 5.0])
-        self.tree.insertPointCloud(np.array([test_point1]),
-                                   np.array([0.0, 0.0, 0.0]))
+        self.tree.insertPointCloud(
+            np.array([test_point1]), np.array([0.0, 0.0, 0.0])
+        )
         node1 = self.tree.search(test_point1)
         node2 = self.tree.search(test_point2)
         node3 = self.tree.search(test_point3)
         self.assertTrue(self.tree.isNodeOccupied(node1))
         self.assertFalse(self.tree.isNodeOccupied(node2))
-        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node3))
+        self.assertRaises(
+            octomap.NullPointerException,
+            lambda: self.tree.isNodeOccupied(node3),
+        )
 
         self.tree.updateNode(test_point2, True)
         self.tree.updateInnerOccupancy()
         self.assertTrue(self.tree.isNodeOccupied(node2))
 
     def test_Iterator(self):
-        self.tree.insertPointCloud(np.array([[1.0, 0.0 ,0.0],
-                                             [0.0, 0.0, 1.0],
-                                             [-1.0, 0.0, 0.0],
-                                             [0.0, 0.0, -1.0]]),
-                                   np.array([0.0, 1.0, 0.0]))
+        self.tree.insertPointCloud(
+            np.array(
+                [
+                    [1.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0],
+                    [-1.0, 0.0, 0.0],
+                    [0.0, 0.0, -1.0],
+                ]
+            ),
+            np.array([0.0, 1.0, 0.0]),
+        )
         nodes = [i for i in self.tree.begin_tree() if i.isLeaf()]
         leafs = [i for i in self.tree.begin_leafs()]
-        leafs_bbx = [i for i in self.tree.begin_leafs_bbx(np.array([0.0, 0.0, 0.0]),
-                                                          np.array([1.0, 0.0, 0.0]))]
+        leafs_bbx = [
+            i
+            for i in self.tree.begin_leafs_bbx(
+                np.array([0.0, 0.0, 0.0]), np.array([1.0, 0.0, 0.0])
+            )
+        ]
         self.assertEqual(len(nodes), len(leafs))
         self.assertEqual(len(leafs_bbx), 2)
 
@@ -106,13 +125,15 @@ class OctreeTestCase(unittest.TestCase):
         self.assertTrue(np.all(end == 0.0))
 
         self.tree.insertPointCloud(
-            np.array([
-                [1.0, 0.0 , 0.0],
-                [0.0, 0.0, 1.0],
-                [-1.0, 0.0, 0.0],
-                [0.0, 0.0, -1.0]
-            ]),
-            np.array([0.0, 0.0, 0.0])
+            np.array(
+                [
+                    [1.0, 0.0, 0.0],
+                    [0.0, 0.0, 1.0],
+                    [-1.0, 0.0, 0.0],
+                    [0.0, 0.0, -1.0],
+                ]
+            ),
+            np.array([0.0, 0.0, 0.0]),
         )
 
         # hit
@@ -135,9 +156,18 @@ class OctreeTestCase(unittest.TestCase):
         node1 = self.tree.search(test_point1)
         node2 = self.tree.search(test_point2)
         node3 = self.tree.search(test_point3)
-        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node1))
-        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node2))
-        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node3))
+        self.assertRaises(
+            octomap.NullPointerException,
+            lambda: self.tree.isNodeOccupied(node1),
+        )
+        self.assertRaises(
+            octomap.NullPointerException,
+            lambda: self.tree.isNodeOccupied(node2),
+        )
+        self.assertRaises(
+            octomap.NullPointerException,
+            lambda: self.tree.isNodeOccupied(node3),
+        )
 
         # batch update w/ test points
         self.tree.updateNodes([test_point1, test_point2, test_point3], True)
@@ -155,9 +185,9 @@ class OctreeTestCase(unittest.TestCase):
         test_point2 = np.array([0.0, 0.0, 0.0])
         test_point3 = np.array([5.0, 5.0, 5.0])
 
-        self.tree.insertPointCloud(np.array([test_point1]),
-                                   np.array([0.0, 0.0, 0.0]),
-                                   discretize=True)
+        self.tree.insertPointCloud(
+            np.array([test_point1]), np.array([0.0, 0.0, 0.0]), discretize=True
+        )
 
         node1 = self.tree.search(test_point1)
         node2 = self.tree.search(test_point2)
@@ -165,7 +195,10 @@ class OctreeTestCase(unittest.TestCase):
 
         self.assertTrue(self.tree.isNodeOccupied(node1))
         self.assertFalse(self.tree.isNodeOccupied(node2))
-        self.assertRaises(octomap.NullPointerException, lambda : self.tree.isNodeOccupied(node3))
+        self.assertRaises(
+            octomap.NullPointerException,
+            lambda: self.tree.isNodeOccupied(node3),
+        )
 
 
 if __name__ == "__main__":

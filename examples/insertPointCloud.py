@@ -12,7 +12,7 @@ import octomap
 
 
 def pointcloud_from_depth(depth, fx, fy, cx, cy):
-    assert depth.dtype.kind == 'f', 'depth must be float and have meter values'
+    assert depth.dtype.kind == "f", "depth must be float and have meter values"
 
     rows, cols = depth.shape
     c, r = np.meshgrid(np.arange(cols), np.arange(rows), sparse=True)
@@ -73,21 +73,21 @@ def visualize(
     geom = trimesh.PointCloud(vertices=pcd[mask], colors=rgb[mask])
     scene = trimesh.Scene(camera=camera, geometry=[bbox, geom, camera_marker])
     scene.camera_transform = camera_transform
-    hbox.add(labeled_scene_widget(scene, label='pointcloud'))
+    hbox.add(labeled_scene_widget(scene, label="pointcloud"))
 
     geom = trimesh.voxel.ops.multibox(
         occupied, pitch=resolution, colors=[1.0, 0, 0, 0.5]
     )
     scene = trimesh.Scene(camera=camera, geometry=[bbox, geom, camera_marker])
     scene.camera_transform = camera_transform
-    hbox.add(labeled_scene_widget(scene, label='occupied'))
+    hbox.add(labeled_scene_widget(scene, label="occupied"))
 
     geom = trimesh.voxel.ops.multibox(
         empty, pitch=resolution, colors=[0.5, 0.5, 0.5, 0.5]
     )
     scene = trimesh.Scene(camera=camera, geometry=[bbox, geom, camera_marker])
     scene.camera_transform = camera_transform
-    hbox.add(labeled_scene_widget(scene, label='empty'))
+    hbox.add(labeled_scene_widget(scene, label="empty"))
 
     gui.add(hbox)
     pyglet.app.run()
@@ -95,11 +95,11 @@ def visualize(
 
 def main():
     data = imgviz.data.arc2017()
-    camera_info = data['camera_info']
-    K = np.array(camera_info['K']).reshape(3, 3)
-    rgb = data['rgb']
+    camera_info = data["camera_info"]
+    K = np.array(camera_info["K"]).reshape(3, 3)
+    rgb = data["rgb"]
     pcd = pointcloud_from_depth(
-        data['depth'], fx=K[0, 0], fy=K[1, 1], cx=K[0, 2], cy=K[1, 2]
+        data["depth"], fx=K[0, 0], fy=K[1, 1], cx=K[0, 2], cy=K[1, 2]
     )
 
     nonnan = ~np.isnan(pcd).any(axis=2)
@@ -121,8 +121,8 @@ def main():
         occupied=occupied,
         empty=empty,
         K=K,
-        width=camera_info['width'],
-        height=camera_info['height'],
+        width=camera_info["width"],
+        height=camera_info["height"],
         rgb=rgb,
         pcd=pcd,
         mask=mask,
@@ -131,5 +131,5 @@ def main():
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
