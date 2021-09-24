@@ -13,11 +13,11 @@ from insertPointCloud import visualize
 
 def main():
     data = imgviz.data.arc2017()
-    camera_info = data['camera_info']
-    K = np.array(camera_info['K']).reshape(3, 3)
-    rgb = data['rgb']
+    camera_info = data["camera_info"]
+    K = np.array(camera_info["K"]).reshape(3, 3)
+    rgb = data["rgb"]
     pcd = pointcloud_from_depth(
-        data['depth'], fx=K[0, 0], fy=K[1, 1], cx=K[0, 2], cy=K[1, 2]
+        data["depth"], fx=K[0, 0], fy=K[1, 1], cx=K[0, 2], cy=K[1, 2]
     )
 
     nonnan = ~np.isnan(pcd).any(axis=2)
@@ -54,8 +54,8 @@ def main():
         occupied=occupied,
         empty=empty,
         K=K,
-        width=camera_info['width'],
-        height=camera_info['height'],
+        width=camera_info["width"],
+        height=camera_info["height"],
         rgb=rgb,
         pcd=pcd,
         mask=mask,
@@ -64,5 +64,5 @@ def main():
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
