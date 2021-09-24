@@ -1,0 +1,47 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        flake8 .
+
+    - name: Black
+      run: |
+        pip install black
+        black --check .
+      if: matrix.python-version != '2.7' && matrix.python-version != '3.5'
+
+    - name: Install from source
+      run: |
+        python setup.py install
+        # FIXME: python -m pip won't work in CI
+        # pip install .
+
+    # - name: Test
+    #   run: |
+    #     pip install pytest
+    #     pytest tests
