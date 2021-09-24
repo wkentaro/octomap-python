@@ -1,5 +1,5 @@
 <h1 align="center">octomap-python</h1>
-<h4 align="center">Python binding of [the OctoMap library](https://github.com/OctoMap/octomap).</h4>
+<h4 align="center">Python binding of <a href="https://github.com/OctoMap/octomap">the OctoMap library</a>.</h4>
 
 <div align="center">
   <a href="https://pypi.python.org/pypi/octomap-python"><img src="https://img.shields.io/pypi/v/octomap-python.svg"></a>
