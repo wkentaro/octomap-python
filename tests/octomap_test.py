@@ -200,6 +200,33 @@ class OctreeTestCase(unittest.TestCase):
             lambda: self.tree.isNodeOccupied(node3),
         )
 
+    def test_dynamicEDT(self):
+        # A single occupied voxel at the origin: the Euclidean distance
+        # transform should read ~0 at the obstacle and grow linearly with
+        # distance away from it.
+        self.tree.updateNode(np.array([0.0, 0.0, 0.0]), True)
+        self.tree.updateInnerOccupancy()
+        self.tree.dynamicEDT_generate(
+            maxdist=4.0,
+            bbx_min=np.array([-2.0, -2.0, -2.0]),
+            bbx_max=np.array([2.0, 2.0, 2.0]),
+            treatUnknownAsOccupied=False,
+        )
+        self.tree.dynamicEDT_update(True)
+
+        res = self.tree.getResolution()
+        self.assertAlmostEqual(
+            self.tree.dynamicEDT_getDistance(np.array([0.0, 0.0, 0.0])),
+            0.0,
+            delta=res,
+        )
+        self.assertAlmostEqual(
+            self.tree.dynamicEDT_getDistance(np.array([1.0, 0.0, 0.0])),
+            1.0,
+            delta=res,
+        )
+        self.assertGreaterEqual(self.tree.dynamicEDT_getMaxDist(), 4.0)
+
 
 if __name__ == "__main__":
     unittest.main()
