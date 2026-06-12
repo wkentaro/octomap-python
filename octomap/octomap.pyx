@@ -114,12 +114,12 @@ cdef class iterator_base:
         if self.thisptr:
             del self.thisptr
 
-    def __is_end(self):
+    def _is_end(self):
         return deref(self.thisptr) == self.treeptr.end_tree()
 
-    def __is_acceseable(self):
+    def _is_acceseable(self):
         if self.thisptr and self.treeptr:
-            if not self.__is_end():
+            if not self._is_end():
                 return True
         return False
 
@@ -128,14 +128,14 @@ cdef class iterator_base:
         return the center coordinate of the current node
         """
         cdef defs.Vector3 pt
-        if self.__is_acceseable():
+        if self._is_acceseable():
             pt = self.thisptr.getCoordinate()
             return np.array((pt.x(), pt.y(), pt.z()))
         else:
             raise NullPointerException
 
     def getDepth(self):
-        if self.__is_acceseable():
+        if self._is_acceseable():
             return self.thisptr.getDepth()
         else:
             raise NullPointerException
@@ -144,7 +144,7 @@ cdef class iterator_base:
         """
         the OcTreeKey of the current node
         """
-        if self.__is_acceseable():
+        if self._is_acceseable():
             key = OcTreeKey()
             key.thisptr[0][0] = self.thisptr.getKey()[0]
             key.thisptr[0][1] = self.thisptr.getKey()[1]
@@ -157,7 +157,7 @@ cdef class iterator_base:
         """
         the OcTreeKey of the current node, for nodes with depth != maxDepth
         """
-        if self.__is_acceseable():
+        if self._is_acceseable():
             key = OcTreeKey()
             key.thisptr[0][0] = self.thisptr.getIndexKey()[0]
             key.thisptr[0][1] = self.thisptr.getIndexKey()[1]
@@ -167,35 +167,35 @@ cdef class iterator_base:
             raise NullPointerException
 
     def getSize(self):
-        if self.__is_acceseable():
+        if self._is_acceseable():
             return self.thisptr.getSize()
         else:
             raise NullPointerException
 
     def getX(self):
-        if self.__is_acceseable():
+        if self._is_acceseable():
             return self.thisptr.getX()
         else:
             raise NullPointerException
     def getY(self):
-        if self.__is_acceseable():
+        if self._is_acceseable():
             return self.thisptr.getY()
         else:
             raise NullPointerException
     def getZ(self):
-        if self.__is_acceseable():
+        if self._is_acceseable():
             return self.thisptr.getZ()
         else:
             raise NullPointerException
 
     def getOccupancy(self):
-        if self.__is_acceseable():
+        if self._is_acceseable():
             return (<defs.OcTreeNode>deref(deref(self.thisptr))).getOccupancy()
         else:
             raise NullPointerException
 
     def getValue(self):
-        if self.__is_acceseable():
+        if self._is_acceseable():
             return (<defs.OcTreeNode>deref(deref(self.thisptr))).getValue()
         else:
             raise NullPointerException
@@ -210,7 +210,7 @@ cdef class tree_iterator(iterator_base):
 
     def next(self):
         if self.thisptr and self.treeptr:
-            if not self.__is_end():
+            if not self._is_end():
                 inc(deref(defs.static_cast[tree_iterator_ptr](self.thisptr)))
                 return self
             else:
@@ -220,7 +220,7 @@ cdef class tree_iterator(iterator_base):
 
     def __iter__(self):
         if self.thisptr and self.treeptr:
-            while not self.__is_end():
+            while not self._is_end():
                 yield self
                 if self.thisptr:
                     inc(deref(defs.static_cast[tree_iterator_ptr](self.thisptr)))
@@ -230,7 +230,7 @@ cdef class tree_iterator(iterator_base):
             raise NullPointerException
 
     def isLeaf(self):
-        if self.__is_acceseable():
+        if self._is_acceseable():
             return defs.static_cast[tree_iterator_ptr](self.thisptr).isLeaf()
         else:
             raise NullPointerException
@@ -244,7 +244,7 @@ cdef class leaf_iterator(iterator_base):
 
     def next(self):
         if self.thisptr and self.treeptr:
-            if not self.__is_end():
+            if not self._is_end():
                 inc(deref(defs.static_cast[leaf_iterator_ptr](self.thisptr)))
                 return self
             else:
@@ -254,7 +254,7 @@ cdef class leaf_iterator(iterator_base):
 
     def __iter__(self):
         if self.thisptr and self.treeptr:
-            while not self.__is_end():
+            while not self._is_end():
                 yield self
                 if self.thisptr:
                     inc(deref(defs.static_cast[leaf_iterator_ptr](self.thisptr)))
@@ -272,7 +272,7 @@ cdef class leaf_bbx_iterator(iterator_base):
 
     def next(self):
         if self.thisptr and self.treeptr:
-            if not self.__is_end():
+            if not self._is_end():
                 inc(deref(defs.static_cast[leaf_bbx_iterator_ptr](self.thisptr)))
                 return self
             else:
@@ -282,7 +282,7 @@ cdef class leaf_bbx_iterator(iterator_base):
 
     def __iter__(self):
         if self.thisptr and self.treeptr:
-            while not self.__is_end():
+            while not self._is_end():
                 yield self
                 if self.thisptr:
                     inc(deref(defs.static_cast[leaf_bbx_iterator_ptr](self.thisptr)))
