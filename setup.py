@@ -105,6 +105,9 @@ def main():
         ext_modules=ext_modules,
         cmdclass={"build_ext": build_ext},
         cmake_source_dir="src/octomap",
+        # OctoMap 1.8.0 predates C++17; on newer compilers (e.g. GCC 13) the
+        # default gnu++17 makes octomap's `byte` typedef clash with std::byte.
+        cmake_args=["-DCMAKE_CXX_STANDARD=14"],
     )
 
 
