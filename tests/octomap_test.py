@@ -114,15 +114,18 @@ class OctreeTestCase(unittest.TestCase):
         direction = np.array([1.0, 0.0, 0.0])
         end = np.array([0.0, 0.0, 0.0])
 
-        # miss
+        # miss still reports where the ray stopped: the voxel entered when
+        # the ray reached maxRange=5.0 along x, with y/z at the origin voxel
+        # center (0.05 = half of the 0.1 resolution)
         hit = self.tree.castRay(
             origin=origin,
             direction=direction,
             end=end,
             ignoreUnknownCells=True,
+            maxRange=5.0,
         )
         self.assertFalse(hit)
-        self.assertTrue(np.all(end == 0.0))
+        self.assertTrue(np.allclose(end, [5.05, 0.05, 0.05]))
 
         self.tree.insertPointCloud(
             np.array(
@@ -137,6 +140,7 @@ class OctreeTestCase(unittest.TestCase):
         )
 
         # hit
+        end[:] = [9.0, 9.0, 9.0]
         hit = self.tree.castRay(
             origin=origin,
             direction=direction,
@@ -145,6 +149,19 @@ class OctreeTestCase(unittest.TestCase):
         )
         self.assertTrue(hit)
         self.assertTrue(np.allclose(end, [1.05, 0.05, 0.05]))
+
+        # a ray that cannot be cast (origin outside the tree) leaves end
+        # unchanged rather than overwriting it
+        end[:] = [7.0, 7.0, 7.0]
+        hit = self.tree.castRay(
+            origin=np.array([1e6, 1e6, 1e6]),
+            direction=direction,
+            end=end,
+            ignoreUnknownCells=True,
+            maxRange=5.0,
+        )
+        self.assertFalse(hit)
+        self.assertTrue(np.allclose(end, [7.0, 7.0, 7.0]))
 
     def test_updateNodes(self):
         # test points
