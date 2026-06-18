@@ -41,7 +41,11 @@ jobs:
         # FIXME: python -m pip won't work in CI
         # pip install .
 
-    # - name: Test
-    #   run: |
-    #     pip install pytest
-    #     pytest tests
+    - name: Test
+      run: |
+        pip install pytest
+        # setup.py install leaves octomap's dependent .so files in _skbuild;
+        # put them on the loader path so `import octomap` resolves them.
+        export LD_LIBRARY_PATH="$(find "$PWD/_skbuild" -name 'libdynamicedt3d.so*' -exec dirname {} \; | head -n1):$LD_LIBRARY_PATH"
+        cd tests
+        pytest .
