@@ -85,7 +85,7 @@ def main():
         extras_require={
             "example": ["glooey", "imgviz>=1.2.0", "pyglet", "trimesh[easy]"],
         },
-        license="BSD",
+        license="BSD-3-Clause",
         maintainer="Kentaro Wada",
         maintainer_email="www.kentaro.wada@gmail.com",
         url="https://github.com/wkentaro/octomap-python",
@@ -95,9 +95,9 @@ def main():
         classifiers=[
             "Development Status :: 5 - Production/Stable",
             "Intended Audience :: Developers",
+            "License :: OSI Approved :: BSD License",
             "Natural Language :: English",
             "Programming Language :: Python",
-            "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 3",
             "Programming Language :: Python :: Implementation :: CPython",
             "Programming Language :: Python :: Implementation :: PyPy",
