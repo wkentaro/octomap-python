@@ -27,11 +27,11 @@ jobs:
     - name: Install from source
       run: uv sync --locked
 
-    - name: Lint with flake8
-      run: uv run flake8 .
+    - name: Ruff lint
+      run: uv run ruff check .
 
-    - name: Black
-      run: uv run black --check .
+    - name: Ruff format
+      run: uv run ruff format --check .
 
     - name: Test
       run: uv run pytest

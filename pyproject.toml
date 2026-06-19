@@ -27,7 +27,7 @@ dynamic = ["readme"]
 Homepage = "https://github.com/wkentaro/octomap-python"
 
 [dependency-groups]
-dev = ["black", "flake8", "pytest"]
+dev = ["ruff", "pytest"]
 # The examples use an old GUI stack pinned to keep it working: glooey 0.3.6
 # needs pyglet 1.x APIs (e.g. graphics.OrderedGroup), trimesh.viewer.SceneWidget
 # was removed in trimesh 4.8.3, and glooey's autoprop/typeguard chain relies on
@@ -65,11 +65,11 @@ replacement = 'src="https://raw.githubusercontent.com/wkentaro/octomap-python/ma
 pattern = '!\[([^\]]*)\]\((?!https?://)([^)]+)\)'
 replacement = '![\1](https://raw.githubusercontent.com/wkentaro/octomap-python/main/\2)'
 
-[tool.black]
+[tool.ruff]
 line-length = 79
-exclude = '''
-(
-    ^/\..*
-  | ^/src/
-)
-'''
+extend-exclude = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+# E203 (whitespace before ':') conflicts with the formatter.
+ignore = ["E203"]
