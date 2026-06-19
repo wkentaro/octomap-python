@@ -24,7 +24,17 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-example = ["glooey", "imgviz>=1.2.0", "pyglet", "trimesh[easy]"]
+# The examples use an old GUI stack pinned to keep it working: glooey 0.3.6
+# needs pyglet 1.x APIs (e.g. graphics.OrderedGroup), trimesh.viewer.SceneWidget
+# was removed in trimesh 4.8.3, and glooey's autoprop/typeguard chain relies on
+# ast.Str (removed in Python 3.12), so the examples run on Python <=3.11; see
+# .python-version.
+example = [
+    "glooey==0.3.6",
+    "imgviz>=1.2.0",
+    "pyglet<2",
+    "trimesh[easy]<4.8.3",
+]
 
 [project.urls]
 Homepage = "https://github.com/wkentaro/octomap-python"

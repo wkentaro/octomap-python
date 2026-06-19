@@ -450,31 +450,24 @@ dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/29/89/692237d6a60f58f87f7bffdfe8c30008efd8811411e692f96d2cb1df0818/embreex-4.4.0-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:b685ed766ef86dbd302ae9e92ab20156007c31cbd2ea5465542b50eea99c6da5", size = 5098460, upload-time = "2026-04-22T19:46:30.276Z" },
     { url = "https://files.pythonhosted.org/packages/14/fe/cedef264696768248f8139c569e10796ffb76627383adb5a60e1eaf28a20/embreex-4.4.0-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:daf8b1848798523d7d71cc22f2610401ab02ec93ea063f9cbb90dcb9abda2ccf", size = 13215487, upload-time = "2026-04-22T19:46:32.769Z" },
     { url = "https://files.pythonhosted.org/packages/11/f5/460b7f79689ac5e6ceb3ec2a1194176a0a66d6c4e010dae68ba899a1c927/embreex-4.4.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f548cbebc550624ef08530ed9dcd147eeddcd181fd8f32cf3378800b39b21034", size = 14438524, upload-time = "2026-04-22T19:46:35.533Z" },
     { url = "https://files.pythonhosted.org/packages/9f/c2/aef3606d7ca2b4d2d18e57c8f65762b94d253e678a05c946649bb1913f5e/embreex-4.4.0-cp310-cp310-win_amd64.whl", hash = "sha256:58921ef7ad488dbd514b3053e7c4a9fdcd2f7008426b3185b9f1bd394c608edd", size = 13119003, upload-time = "2026-04-22T19:46:38.442Z" },
-    { url = "https://files.pythonhosted.org/packages/d8/e1/84b02da29deac092349b12fae21a3cbf4b64104ef78e0d0c1bca5d268112/embreex-4.4.0-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:b2e69b777c0b7878e13ad8c31f4fecaddb5cd8633a5814c1ac11da2efe1065dc", size = 5098210, upload-time = "2026-04-22T19:46:41.149Z" },
     { url = "https://files.pythonhosted.org/packages/4c/0c/1bcdcb8cb09713d40c3cc6d303a4e456113df859dacb28a1b7af8a19a718/embreex-4.4.0-cp311-cp311-macosx_13_0_x86_64.whl", hash = "sha256:96a187753f578cb685051f8fd679dc7986f887fcb922bb81a9924f5b89e941d8", size = 13214875, upload-time = "2026-04-22T19:46:43.439Z" },
     { url = "https://files.pythonhosted.org/packages/7d/1d/bed6f27a57b89ad028c8ec5adf6f1877a1ef92d983d703abb7a70717f0d9/embreex-4.4.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:8415d14c8956afec7eb05749f1e0bf396bb51efd566054ca169e10e4089e7bb7", size = 14474358, upload-time = "2026-04-22T19:46:46.056Z" },
     { url = "https://files.pythonhosted.org/packages/21/f4/c3515fde7bacab245673988398ef40928ce0b9fb54e2b51e90a4a4535479/embreex-4.4.0-cp311-cp311-win_amd64.whl", hash = "sha256:bfa54fb71cbb3a41c2366cabd09bb2dbbc8700843872f2c8655a3215a73459a7", size = 13119132, upload-time = "2026-04-22T19:46:48.753Z" },
-    { url = "https://files.pythonhosted.org/packages/f6/04/b3413ba4f1c17f2374cc39b5b86404221aedc632c8b6cdb484697eeffcd8/embreex-4.4.0-cp312-cp312-macosx_13_0_arm64.whl", hash = "sha256:3bb261a25c21d50bc7f046401e7256e59e43a500b229fb2a00b6393c61e5293d", size = 5097518, upload-time = "2026-04-22T19:46:51.379Z" },
     { url = "https://files.pythonhosted.org/packages/6d/78/8cc0960cc0f2d60d581869a66c8013e1bf1c73bf5bf9609bd8aa79e0f721/embreex-4.4.0-cp312-cp312-macosx_13_0_x86_64.whl", hash = "sha256:8e93bce7cf905365117dea2d0726d19262c88a010044d00631db6bb7dc145612", size = 13214768, upload-time = "2026-04-22T19:46:54.088Z" },
     { url = "https://files.pythonhosted.org/packages/79/b0/05a5b4d49749602b12e13d1871f8e6d1fe6db806eda75f6f57bb4f1acf6f/embreex-4.4.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:cb0872f5bc231f465b840b122847acbaf468ac48f49bfaff127c5347ec0db94f", size = 14529899, upload-time = "2026-04-22T19:46:56.824Z" },
     { url = "https://files.pythonhosted.org/packages/b5/96/625e035f3433071c91de07e66265a261be7bb708367f785000f93d7a992a/embreex-4.4.0-cp312-cp312-win_amd64.whl", hash = "sha256:6c092ee1adf5c48b7430c7ae3902943863745e54b4aef4327ecb3473e0a299d7", size = 13119305, upload-time = "2026-04-22T19:46:59.329Z" },
-    { url = "https://files.pythonhosted.org/packages/9b/58/56b0ef72a128da86892f89f61f0c91bf60c6ea20c2ab952cb88e05c4e89b/embreex-4.4.0-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:096cffa6be78966b0214b26f09fc22cb5ebcfbd4fe9fdc27caf6400869058a51", size = 5094712, upload-time = "2026-04-22T19:47:02.112Z" },
     { url = "https://files.pythonhosted.org/packages/36/d2/9bbde8d9d520c2a7bcad892631165b9676d9dcbde381f25bfda06d0f6e42/embreex-4.4.0-cp313-cp313-macosx_13_0_x86_64.whl", hash = "sha256:078bae4dcebb2a64c8dde6b3c178f258f966c4514e265608620033a6c907e21b", size = 13212105, upload-time = "2026-04-22T19:47:04.511Z" },
     { url = "https://files.pythonhosted.org/packages/03/5d/3e5ca5dea1c2c5b4604f3bedb67ea4beaa465398d9c04d8124ca3d657b05/embreex-4.4.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:cd305875e2cd7c51004a423fe7da9881fa266fa4a50e61dd546978e10f020e66", size = 14486730, upload-time = "2026-04-22T19:47:07.229Z" },
     { url = "https://files.pythonhosted.org/packages/45/00/26741306e557129d398744601cd9bca4069d52cebe146ba99e535f9f2c65/embreex-4.4.0-cp313-cp313-win_amd64.whl", hash = "sha256:433de9063843804d70bb3c1680619bb28bc6403b79d3d94560ec9acc3df96eda", size = 13117246, upload-time = "2026-04-22T19:47:10.08Z" },
-    { url = "https://files.pythonhosted.org/packages/62/70/4ed53f33ab0f0dca32f8017b903f5dcad25df32f7068854e529902aa97da/embreex-4.4.0-cp314-cp314-macosx_13_0_arm64.whl", hash = "sha256:1ef2650f1ced083d433d46389a187fd57f7bf795106ff79a2671e95f2e6a4c4c", size = 5095722, upload-time = "2026-04-22T19:47:12.774Z" },
     { url = "https://files.pythonhosted.org/packages/f5/ac/638a6b4a6cb67125a3c2676a108fb73d75e67b3ce3813f25b6056d0b77cd/embreex-4.4.0-cp314-cp314-macosx_13_0_x86_64.whl", hash = "sha256:ab3c50ecd3aa6c39491928d975b00c9f5eeaa1b39b74bab87170c17e2df1bfde", size = 13212439, upload-time = "2026-04-22T19:47:15.009Z" },
     { url = "https://files.pythonhosted.org/packages/39/1c/567194e9f5bdbb5099144dae3202452821319ff348e328b50c0fbacc3828/embreex-4.4.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:3b0bd41b10dc2f1ad4995faef08d924d5f33a5d47afb97ba5801c820f305db6d", size = 14480771, upload-time = "2026-04-22T19:47:17.681Z" },
     { url = "https://files.pythonhosted.org/packages/d1/8d/a46fb6ca4cc898e8d06449a4b46a8c22a28971f1e6d9bb6c99459bbb96d1/embreex-4.4.0-cp314-cp314-win_amd64.whl", hash = "sha256:80f938291832ab11dc7a604d609bce2587d574b4fe862be91d117562629f1b94", size = 13373573, upload-time = "2026-04-22T19:47:21.487Z" },
-    { url = "https://files.pythonhosted.org/packages/d2/71/4e21eff598840060229cc502034737d04d2a42dee8118c7d5acf6ee6f28a/embreex-4.4.0-cp314-cp314t-macosx_13_0_arm64.whl", hash = "sha256:670470a53fdde1aeb52c4d8db600f17bc0dc7c34dc6f90233909db9c6fe1e88a", size = 5102482, upload-time = "2026-04-22T19:47:23.67Z" },
     { url = "https://files.pythonhosted.org/packages/61/5e/da7c1448c209f406a5b43a8feb07489e8652a64c48450b5642d3f34cf9e7/embreex-4.4.0-cp314-cp314t-macosx_13_0_x86_64.whl", hash = "sha256:ea332cfe60f3b242ecb557ef7b5fcbffec5edd0f3127241bed343d090ac735e2", size = 13218445, upload-time = "2026-04-22T19:47:25.847Z" },
     { url = "https://files.pythonhosted.org/packages/a5/d4/8cb8a41b25138999a98286ae1562e5903c7579ec71becc05bfa1c10d571f/embreex-4.4.0-cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1e3481b76df80f23128173486ac0efe55e9199fc311bc74707452b4f19951eff", size = 14589303, upload-time = "2026-04-22T19:47:28.544Z" },
     { url = "https://files.pythonhosted.org/packages/93/3d/8b393b35016909143ecac7bf7bf418f79236e1f83faf3867b5c5cb50c97f/embreex-4.4.0-cp314-cp314t-win_amd64.whl", hash = "sha256:a2fedc756a36729da6803425398aa4987b27d1d89e9fad403d8ef371fad5ca01", size = 13389585, upload-time = "2026-04-22T19:47:31.398Z" },
-    { url = "https://files.pythonhosted.org/packages/52/05/d2080a98e1837ae27211f8e5705b587c2d622ac5cb1a36799d94b68740fb/embreex-4.4.0-cp39-cp39-macosx_13_0_arm64.whl", hash = "sha256:d925664ee8db2cf1ce18c159363d29f8edbeae32b531250c8ddf3834a7574c62", size = 5100107, upload-time = "2026-04-22T19:47:43.937Z" },
     { url = "https://files.pythonhosted.org/packages/6c/a6/60879ef8880b87d418871c6583f2409a98959d6cdc05d3c80d980fb905b1/embreex-4.4.0-cp39-cp39-macosx_13_0_x86_64.whl", hash = "sha256:ca51f34231775988c448dace3eaad6ebc8e140929ddfeb5acf896db105af3fc7", size = 13217010, upload-time = "2026-04-22T19:47:46.355Z" },
     { url = "https://files.pythonhosted.org/packages/19/1a/eae991dc748ddf6f28ad3671a1f24902b58db14f51dcc310c7be61d3b4f4/embreex-4.4.0-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d873bb573d42db1d0523a3773d4bf36c1a6225b32d1e9d20490ebab1d306e3ea", size = 14439667, upload-time = "2026-04-22T19:47:49.128Z" },
     { url = "https://files.pythonhosted.org/packages/79/a4/a25950879f161d9671f11700cd0e54f43de656fc8b04c55d065fa4503033/embreex-4.4.0-cp39-cp39-win_amd64.whl", hash = "sha256:bd6b8dd1047880f91f7dddac8430016199e4c835a77d001ec1a7bf19db4478e9", size = 13120854, upload-time = "2026-04-22T19:47:51.949Z" },
@@ -1511,11 +1504,11 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "glooey", marker = "extra == 'example'" },
+    { name = "glooey", marker = "extra == 'example'", specifier = "==0.3.6" },
     { name = "imgviz", marker = "extra == 'example'", specifier = ">=1.2.0" },
     { name = "numpy" },
-    { name = "pyglet", marker = "extra == 'example'" },
-    { name = "trimesh", extras = ["easy"], marker = "extra == 'example'" },
+    { name = "pyglet", marker = "extra == 'example'", specifier = "<2" },
+    { name = "trimesh", extras = ["easy"], marker = "extra == 'example'", specifier = "<4.8.3" },
 ]
 provides-extras = ["example"]
 
@@ -1833,11 +1826,11 @@ wheels = [
 
 [[package]]
 name = "pyglet"
-version = "2.1.14"
+version = "1.5.31"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e8/a6/ffd78b2d05a820ced85baa11210b8e5d0db0d951767021150be0a231df00/pyglet-2.1.14.tar.gz", hash = "sha256:feb3fba05a85f50f793688d88ddfbcdc57044d971f2d8d2107eb7578eb4af51e", size = 6595146, upload-time = "2026-04-05T08:24:35.549Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f7/c0/59130a7edbcc8f84e35870b00a712538ca05415ff02d17181277b8ef8f05/pyglet-1.5.31.zip", hash = "sha256:a5e422b4c27b0fc99e92103bf493109cca5c18143583b868b3b4631a98ae9417", size = 6900712, upload-time = "2024-12-24T07:10:58.022Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ae/d4/789d34a4674a4ccc0b65ad54d0f963f873d39000c3ebed0880574d5437e5/pyglet-2.1.14-py3-none-any.whl", hash = "sha256:70febf03f206607103e1f9806527019c589002626937aecdca4d095ce0a4b9b0", size = 1032928, upload-time = "2026-04-05T08:24:29.068Z" },
+    { url = "https://files.pythonhosted.org/packages/e2/43/46aa0ab49f2f5145d201780c7595cf0c305fb4fb5d00d6639792a3d0e770/pyglet-1.5.31-py3-none-any.whl", hash = "sha256:f68413564bbec380e4815898fef0fb7a4a494dc3f8718bfbf28ce2a802634c88", size = 1143660, upload-time = "2024-12-24T07:10:50.769Z" },
 ]
 
 [[package]]
@@ -2890,28 +2883,28 @@ wheels = [
 
 [[package]]
 name = "trimesh"
-version = "4.12.2"
+version = "4.8.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy", version = "2.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/79/37/5cb90f04990260d2caceb6093560c6cefafca1ec522c1e43be01ca658244/trimesh-4.12.2.tar.gz", hash = "sha256:c8ca31571ac00b112e4e160e66a2d4c3491df321f056bd33806be0485d1af9d9", size = 842220, upload-time = "2026-05-01T00:57:43.333Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d2/91/915e5affdfcc06ef4523b2b5645ef319d165cf4618110ba2893a5fb99a35/trimesh-4.8.2.tar.gz", hash = "sha256:1b9e50feb77dac820428b7408f6cea707577342cd37a493e4491765bd5a67da3", size = 824364, upload-time = "2025-09-17T21:44:22.355Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/05/98/716a473cfb24750858ddd5d14e6527539dd206583a46408d08eeb2844a75/trimesh-4.12.2-py3-none-any.whl", hash = "sha256:b5b5afa63c5272345f2858f7676bc8c217dc8a89f4fadf6193fe10a81b5ff2aa", size = 741043, upload-time = "2026-05-01T00:57:40.763Z" },
+    { url = "https://files.pythonhosted.org/packages/ea/70/d4376ceb7fe7ab8f9bf70b4f24f5bb7d436f51dc50cf21432401bc8233b2/trimesh-4.8.2-py3-none-any.whl", hash = "sha256:666f93c143576d0cbe6e1f6a44bde1d864367f274e9ae3917cabd363394a58a1", size = 729114, upload-time = "2025-09-17T21:44:19.3Z" },
 ]
 
 [package.optional-dependencies]
 easy = [
     { name = "charset-normalizer" },
     { name = "colorlog" },
-    { name = "embreex" },
+    { name = "embreex", marker = "platform_machine == 'x86_64'" },
     { name = "httpx" },
     { name = "jsonschema", version = "4.25.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "jsonschema", version = "4.26.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "lxml" },
-    { name = "manifold3d", marker = "python_full_version < '3.14'" },
+    { name = "manifold3d" },
     { name = "mapbox-earcut" },
     { name = "networkx", version = "3.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "networkx", version = "3.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
