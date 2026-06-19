@@ -1,10 +1,11 @@
-import os
-import tempfile
+import pathlib
 
 import numpy as np
 import pytest
 
 import octomap
+
+TEST_BT = str(pathlib.Path(__file__).parent / "test.bt").encode()
 
 
 @pytest.fixture
@@ -13,48 +14,47 @@ def tree() -> octomap.OcTree:
 
 
 def test_readBinary(tree: octomap.OcTree) -> None:
-    assert tree.readBinary(b"test.bt")
+    assert tree.readBinary(TEST_BT)
     assert not tree.readBinary(b"test0.bt")
 
 
-def test_writeBinary(tree: octomap.OcTree) -> None:
-    assert tree.writeBinary(b"test1.bt")
+def test_writeBinary(tree: octomap.OcTree, tmp_path: pathlib.Path) -> None:
+    assert tree.writeBinary(str(tmp_path / "test1.bt").encode())
 
 
-def test_str_paths(tree: octomap.OcTree) -> None:
+def test_str_paths(tree: octomap.OcTree, tmp_path: pathlib.Path) -> None:
     tree.updateNode(np.array([1.0, 2.0, 3.0]), True)
     tree.updateInnerOccupancy()
-    with tempfile.TemporaryDirectory() as tmp:
-        bt_path = os.path.join(tmp, "tree.bt")
-        ot_path = os.path.join(tmp, "tree.ot")
+    bt_path = str(tmp_path / "tree.bt")
+    ot_path = str(tmp_path / "tree.ot")
 
-        # writeBinary / readBinary round-trip with str paths
-        assert tree.writeBinary(bt_path)
-        expected_bt = tree.writeBinary()
-        tree_bin = octomap.OcTree(0.1)
-        assert tree_bin.readBinary(bt_path)
-        assert tree_bin.writeBinary() == expected_bt
+    # writeBinary / readBinary round-trip with str paths
+    assert tree.writeBinary(bt_path)
+    expected_bt = tree.writeBinary()
+    tree_bin = octomap.OcTree(0.1)
+    assert tree_bin.readBinary(bt_path)
+    assert tree_bin.writeBinary() == expected_bt
 
-        # the str constructor reads a .bt file without TypeError
-        tree_ctor = octomap.OcTree(bt_path)
-        assert tree_ctor.writeBinary() == expected_bt
+    # the str constructor reads a .bt file without TypeError
+    tree_ctor = octomap.OcTree(bt_path)
+    assert tree_ctor.writeBinary() == expected_bt
 
-        # write / read round-trip with str paths
-        assert tree.write(ot_path)
-        expected_ot = tree.write()
-        tree_full = octomap.OcTree.read(ot_path)
-        assert tree_full.write() == expected_ot
+    # write / read round-trip with str paths
+    assert tree.write(ot_path)
+    expected_ot = tree.write()
+    tree_full = octomap.OcTree.read(ot_path)
+    assert tree_full.write() == expected_ot
 
 
 def test_checkTree(tree: octomap.OcTree) -> None:
-    tree.readBinary(b"test.bt")
+    tree.readBinary(TEST_BT)
     data = tree.write()
     tree2 = octomap.OcTree.read(data)
     assert tree2.write() == data
 
 
 def test_checkBinary(tree: octomap.OcTree) -> None:
-    tree.readBinary(b"test.bt")
+    tree.readBinary(TEST_BT)
     data = tree.writeBinary()
     tree2 = octomap.OcTree(0.1)
     tree2.readBinary(data)
