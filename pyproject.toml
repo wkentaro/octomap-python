@@ -65,6 +65,15 @@ replacement = 'src="https://raw.githubusercontent.com/wkentaro/octomap-python/ma
 pattern = '!\[([^\]]*)\]\((?!https?://)([^)]+)\)'
 replacement = '![\1](https://raw.githubusercontent.com/wkentaro/octomap-python/main/\2)'
 
+[tool.cibuildwheel]
+# Py 3.9-3.13; the trailing "t" free-threaded builds (cp313t-*) are excluded by
+# matching only cp3XX-* without the "t".
+build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+# Only manylinux is shipped; musllinux (Alpine) users build from the sdist.
+skip = "*-musllinux*"
+test-requires = "pytest"
+test-command = "pytest {project}/tests"
+
 [tool.ruff]
 line-length = 79
 extend-exclude = ["src"]

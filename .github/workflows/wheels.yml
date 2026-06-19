@@ -1,0 +1,81 @@
+name: wheels
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build_wheels:
+    name: Wheels (${{ matrix.os }} ${{ matrix.archs }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            archs: x86_64
+          - os: ubuntu-24.04-arm
+            archs: aarch64
+          - os: macos-14
+            archs: arm64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build wheels
+      uses: pypa/cibuildwheel@v4.1.0
+      env:
+        CIBW_ARCHS: ${{ matrix.archs }}
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: wheels-${{ matrix.os }}-${{ matrix.archs }}
+        path: wheelhouse/*.whl
+
+  build_sdist:
+    name: sdist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build sdist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: sdist
+        path: dist/*.tar.gz
+
+  # Windows ships no wheel; prove the sdist builds from source there.
+  test_sdist_windows:
+    name: sdist from source (windows)
+    needs: build_sdist
+    runs-on: windows-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: sdist
+        path: dist
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - uses: actions/checkout@v4
+      with:
+        path: src
+
+    - name: Install from sdist
+      shell: bash
+      run: pip install --verbose dist/*.tar.gz
+
+    - name: Test
+      shell: bash
+      run: |
+        pip install pytest numpy
+        pytest src/tests/
