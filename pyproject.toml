@@ -1,3 +1,40 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "cython", "numpy"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "octomap-python"
+version = "1.8.0.post12"
+description = "Python binding of the OctoMap library."
+readme = "README.md"
+license = { text = "BSD-3-Clause" }
+maintainers = [
+    { name = "Kentaro Wada", email = "www.kentaro.wada@gmail.com" },
+]
+requires-python = ">=3.9"
+dependencies = ["numpy"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[project.optional-dependencies]
+example = ["glooey", "imgviz>=1.2.0", "pyglet", "trimesh[easy]"]
+
+[project.urls]
+Homepage = "https://github.com/wkentaro/octomap-python"
+
+[tool.scikit-build]
+cmake.version = ">=3.18"
+# No pure-Python package directory; CMake installs the compiled extension
+# module straight to the wheel root.
+wheel.packages = []
+
 [tool.black]
 line-length = 79
 exclude = '''
