@@ -1,6 +1,7 @@
 from libcpp.string cimport string
 from libcpp cimport bool as cppbool
 from libc.string cimport memcpy
+from libc.math cimport NAN, isnan
 from cython.operator cimport dereference as deref, preincrement as inc, address
 cimport octomap_defs as defs
 cimport dynamicEDT3D_defs as edt
@@ -922,5 +923,25 @@ cdef class OcTree:
                 return self.edtptr.getDistance(edt.point3d(<float?>p[0],
                                                            <float?>p[1],
                                                            <float?>p[2]))
+        else:
+            raise NullPointerException
+
+    def dynamicEDT_getDistanceAndClosestObstacle(self, p):
+        """
+        Return (distance, closest_obstacle_xyz) for the query point p. The
+        closest obstacle is None when the library reports none: when p is
+        outside the distance map (distance -1.0) or no obstacle lies within
+        the maximum distance.
+        """
+        cdef float distance
+        cdef edt.point3d obstacle = edt.point3d(NAN, NAN, NAN)
+        if self.edtptr:
+            self.edtptr.getDistanceAndClosestObstacle(
+                edt.point3d(<float?>p[0], <float?>p[1], <float?>p[2]),
+                distance,
+                obstacle)
+            if isnan(obstacle.x()):
+                return distance, None
+            return distance, np.array((obstacle.x(), obstacle.y(), obstacle.z()))
         else:
             raise NullPointerException

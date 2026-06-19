@@ -244,6 +244,44 @@ class OctreeTestCase(unittest.TestCase):
         )
         self.assertGreaterEqual(self.tree.dynamicEDT_getMaxDist(), 4.0)
 
+        # the only obstacle is the voxel at the origin, so the closest
+        # obstacle to any query point is ~[0, 0, 0], and the returned
+        # distance matches dynamicEDT_getDistance for the same query
+        query = np.array([1.0, 0.0, 0.0])
+        distance, obstacle = (
+            self.tree.dynamicEDT_getDistanceAndClosestObstacle(query)
+        )
+        self.assertEqual(distance, self.tree.dynamicEDT_getDistance(query))
+        self.assertTrue(np.allclose(obstacle, [0.0, 0.0, 0.0], atol=res))
+
+        # a query outside the distance map reports -1.0 and no obstacle
+        distance, obstacle = (
+            self.tree.dynamicEDT_getDistanceAndClosestObstacle(
+                np.array([10.0, 10.0, 10.0])
+            )
+        )
+        self.assertEqual(distance, -1.0)
+        self.assertIsNone(obstacle)
+
+        # a query inside the map but beyond maxdist has its distance capped
+        # at the maximum and no recorded obstacle (fresh tree to keep this
+        # tree's distance field intact)
+        far_tree = octomap.OcTree(0.1)
+        far_tree.updateNode(np.array([0.0, 0.0, 0.0]), True)
+        far_tree.updateInnerOccupancy()
+        far_tree.dynamicEDT_generate(
+            maxdist=1.0,
+            bbx_min=np.array([-3.0, -3.0, -3.0]),
+            bbx_max=np.array([3.0, 3.0, 3.0]),
+            treatUnknownAsOccupied=False,
+        )
+        far_tree.dynamicEDT_update(True)
+        distance, obstacle = far_tree.dynamicEDT_getDistanceAndClosestObstacle(
+            np.array([2.0, 0.0, 0.0])
+        )
+        self.assertEqual(distance, far_tree.dynamicEDT_getMaxDist())
+        self.assertIsNone(obstacle)
+
 
 if __name__ == "__main__":
     unittest.main()

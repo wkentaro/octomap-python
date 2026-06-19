@@ -4,6 +4,9 @@ cdef extern from "octomap/math/Vector3.h" namespace "octomath":
     cdef cppclass Vector3:
         Vector3() except +
         Vector3(float, float, float) except +
+        float& x()
+        float& y()
+        float& z()
 
 cdef extern from "octomap/octomap_types.h" namespace "octomap":
     ctypedef Vector3 point3d
@@ -22,5 +25,6 @@ cdef extern from "dynamicEDT3D/dynamicEDTOctomap.h":
         bool checkConsistency()
         float getDistance(point3d& p)
         float getDistance(OcTreeKey& k)
+        void getDistanceAndClosestObstacle(point3d& p, float& distance, point3d& closestObstacle)
         float getMaxDist()
         void update(bool updateRealDist)
