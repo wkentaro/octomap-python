@@ -19,7 +19,7 @@ uv add octomap-python
 
 ```bash
 git clone --recursive https://github.com/wkentaro/octomap-python.git && cd octomap-python
-uv sync --extra example
+uv sync --group examples
 
 cd examples
 uv run python insertPointCloud.py

@@ -1484,15 +1484,6 @@ dependencies = [
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
 ]
 
-[package.optional-dependencies]
-example = [
-    { name = "glooey" },
-    { name = "imgviz", version = "1.7.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "imgviz", version = "2.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "pyglet" },
-    { name = "trimesh", extra = ["easy"] },
-]
-
 [package.dev-dependencies]
 dev = [
     { name = "black", version = "25.11.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -1501,22 +1492,28 @@ dev = [
     { name = "pytest", version = "8.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "pytest", version = "9.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
+examples = [
+    { name = "glooey" },
+    { name = "imgviz", version = "1.7.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "imgviz", version = "2.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "pyglet" },
+    { name = "trimesh", extra = ["easy"] },
+]
 
 [package.metadata]
-requires-dist = [
-    { name = "glooey", marker = "extra == 'example'", specifier = "==0.3.6" },
-    { name = "imgviz", marker = "extra == 'example'", specifier = ">=1.2.0" },
-    { name = "numpy" },
-    { name = "pyglet", marker = "extra == 'example'", specifier = "<2" },
-    { name = "trimesh", extras = ["easy"], marker = "extra == 'example'", specifier = "<4.8.3" },
-]
-provides-extras = ["example"]
+requires-dist = [{ name = "numpy" }]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "black" },
     { name = "flake8" },
     { name = "pytest" },
+]
+examples = [
+    { name = "glooey", specifier = "==0.3.6" },
+    { name = "imgviz", specifier = ">=1.2.0" },
+    { name = "pyglet", specifier = "<2" },
+    { name = "trimesh", extras = ["easy"], specifier = "<4.8.3" },
 ]
 
 [[package]]
