@@ -89,3 +89,7 @@ target_include_directories(octomap PRIVATE
 target_link_libraries(octomap PRIVATE Python::NumPy)
 
 install(TARGETS octomap DESTINATION .)
+
+# Ship the hand-written stub next to the compiled module so type checkers and
+# IDEs can resolve the otherwise-opaque extension module.
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/octomap/octomap.pyi" DESTINATION .)
