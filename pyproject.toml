@@ -35,7 +35,6 @@ dev = ["ruff", "pytest"]
 # .python-version.
 examples = [
     "glooey==0.3.6",
-    "imgviz>=1.2.0",
     "pyglet<2",
     "trimesh[easy]<4.8.3",
 ]
