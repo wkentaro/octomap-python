@@ -2,22 +2,50 @@
 cmake_minimum_required(VERSION 3.18)
 project(octomap_python LANGUAGES CXX)
 
-# OctoMap 1.8.0 predates C++17; on newer compilers the default gnu++17 makes
-# octomap's `byte` typedef clash with std::byte.
+# OctoMap targets an older C++ dialect; pin C++14 so its sources compile
+# cleanly (newer default standards make octomap's `byte` typedef clash with
+# std::byte).
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(
   Python REQUIRED COMPONENTS Interpreter Development.Module NumPy)
 
-set(octomap_dir "${CMAKE_CURRENT_SOURCE_DIR}/src/octomap")
+include(FetchContent)
+
+# OctoMap is fetched and pinned to a release tag rather than vendored as a git
+# submodule. Bumping the version is a one-line change to GIT_TAG.
+#
+# Pinned to v1.8.0 to match the package version line (octomap-python 1.8.0.postN
+# bundles octomap 1.8.0).
+FetchContent_Declare(
+  octomap
+  GIT_REPOSITORY https://github.com/OctoMap/octomap.git
+  GIT_TAG v1.8.0
+  GIT_SHALLOW TRUE
+)
+# Populate the sources only; octomap's own CMake build is intentionally not run.
+# FetchContent_MakeAvailable() would add_subdirectory(octomap), which both
+# defines a CMake target named `octomap` (colliding with python_add_library
+# below) and pulls in octovis/Qt. Source-only population needs the low-level
+# FetchContent_Populate(), which CMake 3.30 deprecated; CMP0169 keeps that path
+# available (the POLICY guard leaves older CMake, which lacks it, untouched).
+if(POLICY CMP0169)
+  cmake_policy(SET CMP0169 OLD)
+endif()
+FetchContent_GetProperties(octomap)
+if(NOT octomap_POPULATED)
+  FetchContent_Populate(octomap)
+endif()
+
+set(octomap_dir "${octomap_SOURCE_DIR}")
 set(octomap_src "${octomap_dir}/octomap/src")
 set(edt_src "${octomap_dir}/dynamicEDT3D/src")
 
 # OctoMap, octomath and dynamicEDT3D are compiled straight into the extension
 # so the module is self-contained: no octomap shared libraries to resolve at
 # import time. octovis/Qt are simply never referenced here. The source lists
-# mirror octomap's own CMakeLists for the pinned v1.8.0 submodule.
+# mirror octomap's own CMakeLists for the pinned release.
 set(octomap_sources
   ${octomap_src}/AbstractOcTree.cpp
   ${octomap_src}/AbstractOccupancyOcTree.cpp

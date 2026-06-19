@@ -6,6 +6,3 @@
 /test/test1.bt
 
 /*.so
-
-/src/
-!/src/octomap
