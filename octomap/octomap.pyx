@@ -404,8 +404,16 @@ cdef class OcTree:
         the first occupied cell is returned (as center coordinate).
         If the starting coordinate is already occupied in the tree,
         this coordinate will be returned as a hit.
+
+        `end` receives the center of the voxel where the ray stopped,
+        whether or not an occupied cell was hit, so a miss (return False)
+        still reports the stopping point. If the ray cannot be cast at all
+        (origin outside the tree, or a zero direction), `end` is left
+        unchanged.
         """
-        cdef defs.point3d e
+        # seed e from end so that, like the C++ point3d& reference, end is
+        # preserved on the early-exit paths where castRay never writes it
+        cdef defs.point3d e = defs.point3d(end[0], end[1], end[2])
         cdef cppbool hit
         hit = self.thisptr.castRay(
             defs.point3d(origin[0], origin[1], origin[2]),
@@ -414,8 +422,7 @@ cdef class OcTree:
             bool(ignoreUnknownCells),
             <double?>maxRange
         )
-        if hit:
-            end[0:3] = e.x(), e.y(), e.z()
+        end[0:3] = e.x(), e.y(), e.z()
         return hit
 
     read = _octree_read
