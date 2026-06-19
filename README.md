@@ -28,6 +28,20 @@ uv run python insertPointCloud.py
 <img src="examples/.readme/insertPointCloud.jpg" height="200px" />
 
 
+## Release
+
+Releases are published to PyPI by the `publish` workflow, which fires when a
+GitHub Release is published. It builds the wheel matrix + sdist and uploads via
+[PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (OIDC, no
+stored token).
+
+To cut a release:
+
+1. Bump `version` in `pyproject.toml` to match the new tag and commit it.
+2. Create a GitHub Release with tag `vX.Y.Z` (e.g. `v1.8.0.post13`).
+3. The `publish` workflow runs and uploads the built distributions to PyPI.
+
+
 ## Acknowledgement
 
 This is a fork of [neka-nat/python-octomap](https://github.com/neka-nat/python-octomap).
