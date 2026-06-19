@@ -1,3 +1,5 @@
+import os
+import tempfile
 import unittest
 
 import numpy as np
@@ -18,6 +20,30 @@ class OctreeTestCase(unittest.TestCase):
 
     def test_writeBinary(self):
         self.assertTrue(self.tree.writeBinary(b"test1.bt"))
+
+    def test_str_paths(self):
+        self.tree.updateNode(np.array([1.0, 2.0, 3.0]), True)
+        self.tree.updateInnerOccupancy()
+        with tempfile.TemporaryDirectory() as tmp:
+            bt_path = os.path.join(tmp, "tree.bt")
+            ot_path = os.path.join(tmp, "tree.ot")
+
+            # writeBinary / readBinary round-trip with str paths
+            self.assertTrue(self.tree.writeBinary(bt_path))
+            expected_bt = self.tree.writeBinary()
+            tree_bin = octomap.OcTree(0.1)
+            self.assertTrue(tree_bin.readBinary(bt_path))
+            self.assertEqual(tree_bin.writeBinary(), expected_bt)
+
+            # the str constructor reads a .bt file without TypeError
+            tree_ctor = octomap.OcTree(bt_path)
+            self.assertEqual(tree_ctor.writeBinary(), expected_bt)
+
+            # write / read round-trip with str paths
+            self.assertTrue(self.tree.write(ot_path))
+            expected_ot = self.tree.write()
+            tree_full = octomap.OcTree.read(ot_path)
+            self.assertEqual(tree_full.write(), expected_ot)
 
     def test_checkTree(self):
         self.tree.readBinary(b"test.bt")

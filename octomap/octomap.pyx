@@ -5,6 +5,7 @@ from libc.math cimport NAN, isnan
 from cython.operator cimport dereference as deref, preincrement as inc, address
 cimport octomap_defs as defs
 cimport dynamicEDT3D_defs as edt
+import os
 import numpy as np
 cimport numpy as np
 ctypedef np.float64_t DOUBLE_t
@@ -299,6 +300,7 @@ def _octree_read(filename):
     """
     cdef defs.istringstream iss
     cdef OcTree tree = OcTree(0.1)
+    filename = os.fsencode(filename)
     if filename.startswith(b"# Octomap OcTree file"):
         iss.str(string(<char*?>filename, len(filename)))
         del tree.thisptr
@@ -320,6 +322,7 @@ cdef class OcTree:
         if isinstance(arg, numbers.Number):
             self.thisptr = new defs.OcTree(<double?>arg)
         else:
+            arg = os.fsencode(arg)
             self.thisptr = new defs.OcTree(string(<char*?>arg))
 
     def __dealloc__(self):
@@ -434,6 +437,7 @@ cdef class OcTree:
         """
         cdef defs.ostringstream oss
         if not filename is None:
+            filename = os.fsencode(filename)
             return self.thisptr.write(string(<char*?>filename))
         else:
             ret = self.thisptr.write(<defs.ostream&?>oss)
@@ -444,6 +448,7 @@ cdef class OcTree:
 
     def readBinary(self, filename):
         cdef defs.istringstream iss
+        filename = os.fsencode(filename)
         if filename.startswith(b"# Octomap OcTree binary file"):
             iss.str(string(<char*?>filename, len(filename)))
             return self.thisptr.readBinary(<defs.istream&?>iss)
@@ -453,6 +458,7 @@ cdef class OcTree:
     def writeBinary(self, filename=None):
         cdef defs.ostringstream oss
         if not filename is None:
+            filename = os.fsencode(filename)
             return self.thisptr.writeBinary(string(<char*?>filename))
         else:
             ret = self.thisptr.writeBinary(<defs.ostream&?>oss)
