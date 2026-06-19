@@ -1,20 +1,19 @@
 #!/usr/bin/env python
 
-import imgviz
 import numpy as np
 import trimesh
 import trimesh.viewer
 
 import octomap
 
+from insertPointCloud import load_sample_data
 from insertPointCloud import pointcloud_from_depth
 from insertPointCloud import visualize
 
 
 def main():
-    data = imgviz.data.arc2017()
-    camera_info = data["camera_info"]
-    K = np.array(camera_info["K"]).reshape(3, 3)
+    data = load_sample_data()
+    K = data["K"]
     rgb = data["rgb"]
     pcd = pointcloud_from_depth(
         data["depth"], fx=K[0, 0], fy=K[1, 1], cx=K[0, 2], cy=K[1, 2]
@@ -54,8 +53,8 @@ def main():
         occupied=occupied,
         empty=empty,
         K=K,
-        width=camera_info["width"],
-        height=camera_info["height"],
+        width=data["width"],
+        height=data["height"],
         rgb=rgb,
         pcd=pcd,
         mask=mask,

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
+import pathlib
+
 import glooey
-import imgviz
 import numpy as np
 import pyglet
 import trimesh
@@ -9,6 +10,18 @@ import trimesh.transformations as tf
 import trimesh.viewer
 
 import octomap
+
+
+def load_sample_data():
+    path = pathlib.Path(__file__).parent / "data" / "arc2017.npz"
+    with np.load(path) as data:
+        return {
+            "K": data["K"].reshape(3, 3),
+            "width": int(data["width"]),
+            "height": int(data["height"]),
+            "rgb": data["rgb"].copy(),
+            "depth": data["depth"].copy(),
+        }
 
 
 def pointcloud_from_depth(depth, fx, fy, cx, cy):
@@ -94,9 +107,8 @@ def visualize(
 
 
 def main():
-    data = imgviz.data.arc2017()
-    camera_info = data["camera_info"]
-    K = np.array(camera_info["K"]).reshape(3, 3)
+    data = load_sample_data()
+    K = data["K"]
     rgb = data["rgb"]
     pcd = pointcloud_from_depth(
         data["depth"], fx=K[0, 0], fy=K[1, 1], cx=K[0, 2], cy=K[1, 2]
@@ -121,8 +133,8 @@ def main():
         occupied=occupied,
         empty=empty,
         K=K,
-        width=camera_info["width"],
-        height=camera_info["height"],
+        width=data["width"],
+        height=data["height"],
         rgb=rgb,
         pcd=pcd,
         mask=mask,
