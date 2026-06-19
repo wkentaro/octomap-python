@@ -11,7 +11,7 @@
 ## Installation
 
 ```bash
-pip install octomap-python
+uv add octomap-python
 ```
 
 
@@ -19,10 +19,10 @@ pip install octomap-python
 
 ```bash
 git clone --recursive https://github.com/wkentaro/octomap-python.git && cd octomap-python
-pip install -e '.[example]'
+uv sync --extra example
 
 cd examples
-python insertPointCloud.py
+uv run python insertPointCloud.py
 ```
 
 <img src="examples/.readme/insertPointCloud.jpg" height="200px" />

@@ -1,4 +1,5 @@
 /_skbuild/
+/.venv/
 /MANIFEST
 
 /octomap/octomap.cpp

@@ -29,6 +29,9 @@ example = ["glooey", "imgviz>=1.2.0", "pyglet", "trimesh[easy]"]
 [project.urls]
 Homepage = "https://github.com/wkentaro/octomap-python"
 
+[dependency-groups]
+dev = ["black", "flake8", "pytest"]
+
 [tool.scikit-build]
 cmake.version = ">=3.18"
 # No pure-Python package directory; CMake installs the compiled extension
