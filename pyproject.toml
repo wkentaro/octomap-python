@@ -42,6 +42,9 @@ Homepage = "https://github.com/wkentaro/octomap-python"
 [dependency-groups]
 dev = ["black", "flake8", "pytest"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [tool.scikit-build]
 cmake.version = ">=3.18"
 # No pure-Python package directory; CMake installs the compiled extension
