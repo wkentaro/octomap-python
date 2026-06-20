@@ -28,9 +28,9 @@ Or with [uv](https://docs.astral.sh/uv/):
 uv add octomap-python
 ```
 
-Binary wheels are published for Linux (x86_64, aarch64) and macOS (Apple
-Silicon), CPython 3.10-3.14. Windows and other platforms build from the sdist
-and need a C++ compiler.
+Binary wheels are published for Linux (x86_64, aarch64), macOS (Apple Silicon),
+and Windows (AMD64), CPython 3.10-3.14. Other platforms build from the sdist and
+need a C++ compiler.
 
 ## Quick start
 
