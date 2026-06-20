@@ -24,6 +24,8 @@ jobs:
             archs: aarch64
           - os: macos-14
             archs: arm64
+          - os: windows-latest
+            archs: AMD64
 
     steps:
     - uses: actions/checkout@v4
@@ -52,7 +54,8 @@ jobs:
         name: sdist
         path: dist/*.tar.gz
 
-  # Windows ships no wheel; prove the sdist builds from source there.
+  # Windows ships an AMD64 wheel (see build_wheels); this guards the remaining
+  # from-source path there (e.g. win_arm64, or pip falling back to the sdist).
   test_sdist_windows:
     name: sdist from source (windows)
     needs: build_sdist
