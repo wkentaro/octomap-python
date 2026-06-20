@@ -33,7 +33,7 @@ dynamic = ["readme"]
 Homepage = "https://github.com/wkentaro/octomap-python"
 
 [dependency-groups]
-dev = ["ruff", "pytest"]
+dev = ["ruff", "pytest", "ty"]
 # The examples use an old GUI stack pinned to keep it working: glooey 0.3.6
 # needs pyglet 1.x APIs (e.g. graphics.OrderedGroup), trimesh.viewer.SceneWidget
 # was removed in trimesh 4.8.3, and glooey's autoprop/typeguard chain relies on
@@ -79,6 +79,14 @@ build = "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
 skip = "*-musllinux*"
 test-requires = "pytest"
 test-command = "pytest {project}/tests"
+
+[tool.ty.src]
+# The examples import an unstubbed GUI stack (trimesh, imgviz, glooey, pyglet)
+# that is only installed for the optional "examples" group.
+exclude = ["examples"]
+
+[tool.ty.rules]
+all = "error"
 
 [tool.ruff]
 line-length = 79
