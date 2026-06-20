@@ -88,7 +88,7 @@ stored token).
 To cut a release:
 
 1. Bump `version` in `pyproject.toml` to match the new tag and commit it.
-2. Create a GitHub Release with tag `vX.Y.Z` (e.g. `v1.8.0.post13`).
+2. Create a GitHub Release with tag `vX.Y.Z` (e.g. `v1.8.0.13`).
 3. The `publish` workflow runs and uploads the built distributions to PyPI.
 
 ## Acknowledgement
