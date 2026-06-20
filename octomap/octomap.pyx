@@ -337,7 +337,7 @@ cdef class OcTree:
         key_in[1] = key[1]
         key_in[2] = key[2]
         cdef defs.OcTreeKey key_out = self.thisptr.adjustKeyAtDepth(key_in, <int?>depth)
-        res = OcTreeKey
+        res = OcTreeKey()
         res[0] = key_out[0]
         res[1] = key_out[1]
         res[2] = key_out[2]
