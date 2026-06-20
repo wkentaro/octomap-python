@@ -14,7 +14,7 @@ occupied, free, or still unknown. This package exposes that C++ library to
 Python with NumPy arrays as the interchange format, so point clouds and queries
 are plain `np.ndarray`s.
 
-<img src="examples/.readme/insertPointCloud.jpg" height="200px" />
+<img src="assets/teaser.jpg" width="75%" />
 
 ## Install
 
@@ -82,8 +82,9 @@ restored = octomap.ColorOcTree.read("tree.ot")
 
 ## Examples
 
-Runnable demos live in [`examples/`](examples); the teaser above is
-`insertPointCloud.py`:
+Runnable demos live in [`examples/`](examples); the teaser above combines
+`insertPointCloud.py` (pointcloud / occupied / empty) and
+`insertPointCloudColor.py` (occupied in color):
 
 ```bash
 git clone --recursive https://github.com/wkentaro/octomap-python.git
