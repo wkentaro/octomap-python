@@ -94,6 +94,9 @@ cd examples
 uv run python insertPointCloud.py
 ```
 
+`insertPointCloudColor.py` is the same demo on a `ColorOcTree`, rendering each
+occupied voxel in its measured RGB color.
+
 ## Release
 
 Releases are published to PyPI by the `publish` workflow, which fires when a
