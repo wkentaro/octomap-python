@@ -1,49 +1,58 @@
 [build-system]
-requires = ["scikit-build-core>=0.10", "cython>=3.0", "numpy>=2.0", "hatch-fancy-pypi-readme"]
 build-backend = "scikit_build_core.build"
+requires = [
+  "cython>=3.0",
+  "hatch-fancy-pypi-readme",
+  "numpy>=2.0",
+  "scikit-build-core>=0.10",
+]
 
 [project]
-name = "octomap-python"
-version = "1.10.0.0"
-description = "Python binding of the OctoMap library."
-license = { text = "BSD-3-Clause" }
-maintainers = [
-    { name = "Kentaro Wada", email = "www.kentaro.wada@gmail.com" },
-]
-requires-python = ">=3.10"
-dependencies = ["numpy"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: BSD License",
-    "Natural Language :: English",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: Implementation :: CPython",
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: BSD License",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python",
 ]
+dependencies = ["numpy"]
+description = "Python binding of the OctoMap library."
 dynamic = ["readme"]
+license = { text = "BSD-3-Clause" }
+maintainers = [{ name = "Kentaro Wada", email = "www.kentaro.wada@gmail.com" }]
+name = "octomap-python"
+requires-python = ">=3.10"
+version = "1.10.0.0"
 
 [project.urls]
 Homepage = "https://github.com/wkentaro/octomap-python"
 
 [dependency-groups]
-dev = ["ruff", "pytest", "ty"]
+dev = [
+  "mdformat",
+  "mdformat-gfm",
+  "pytest",
+  "pytest-cov",
+  "pytest-xdist",
+  "ruff",
+  "taplo",
+  "ty",
+  "typos",
+  "yamlfix",
+]
 # The examples use an old GUI stack pinned to keep it working: glooey 0.3.6
 # needs pyglet 1.x APIs (e.g. graphics.OrderedGroup), trimesh.viewer.SceneWidget
 # was removed in trimesh 4.8.3, and glooey's autoprop/typeguard chain relies on
 # ast.Str (removed in Python 3.12), so the examples run on Python <=3.11; see
 # .python-version.
-examples = [
-    "glooey==0.3.6",
-    "imgviz>=1.2.0",
-    "pyglet<2",
-    "trimesh[easy]<4.8.3",
-]
+examples = ["glooey==0.3.6", "imgviz>=1.2.0", "pyglet<2", "trimesh[easy]<4.8.3"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -52,8 +61,8 @@ testpaths = ["tests"]
 cmake.version = ">=3.18"
 # No pure-Python package directory; CMake installs the compiled extension
 # module straight to the wheel root.
-wheel.packages = []
 metadata.readme.provider = "scikit_build_core.metadata.fancy_pypi_readme"
+wheel.packages = []
 
 # github2pypi used to rewrite README's relative URLs to absolute ones so the
 # PyPI long description renders images; fancy-pypi-readme does that at build
@@ -76,8 +85,8 @@ replacement = '![\1](https://raw.githubusercontent.com/wkentaro/octomap-python/m
 build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
 # Only manylinux is shipped; musllinux (Alpine) users build from the sdist.
 skip = "*-musllinux*"
-test-requires = "pytest"
 test-command = "pytest {project}/tests"
+test-requires = "pytest"
 
 [tool.ty.src]
 # The examples import an unstubbed GUI stack (trimesh, imgviz, glooey, pyglet)
@@ -88,8 +97,8 @@ exclude = ["examples"]
 all = "error"
 
 [tool.ruff]
-line-length = 79
 extend-exclude = ["src"]
+line-length = 79
 
 [tool.ruff.lint]
 select = ["E", "F", "W"]

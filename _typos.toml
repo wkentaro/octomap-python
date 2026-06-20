@@ -1,0 +1,5 @@
+# `leafs` mirrors OctoMap's upstream C++ API (begin_leafs/end_leafs); `ot` is
+# the full-map file extension (.ot), as opposed to the binary tree (.bt).
+[default.extend-words]
+leafs = "leafs"
+ot = "ot"
