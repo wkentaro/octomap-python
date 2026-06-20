@@ -82,9 +82,10 @@ restored = octomap.ColorOcTree.read("tree.ot")
 
 ## Examples
 
-Runnable demos live in [`examples/`](examples); the teaser above combines
-`insertPointCloud.py` (pointcloud / occupied / empty) and
-`insertPointCloudColor.py` (occupied in color):
+Runnable demos live in [`examples/`](examples). `pointcloud_to_octree.py`
+shows the four views from the teaser above (pointcloud / occupied / occupied
+(color) / empty) in a single window, with the cameras synchronized so dragging
+one view rotates all four together:
 
 ```bash
 git clone --recursive https://github.com/wkentaro/octomap-python.git
@@ -92,11 +93,13 @@ cd octomap-python
 uv sync --group examples
 
 cd examples
-uv run python insertPointCloud.py
+uv run python pointcloud_to_octree.py
 ```
 
-`insertPointCloudColor.py` is the same demo on a `ColorOcTree`, rendering each
-occupied voxel in its measured RGB color.
+It builds both an `OcTree` and a `ColorOcTree` so the same scan renders as a
+red occupancy grid and in its measured RGB color side by side. The viewer
+itself (the synced 2x2 window) lives in `examples/viewer.py`, so the example
+reads as a concise walk through the `octomap` API.
 
 ## Release
 
