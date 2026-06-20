@@ -123,6 +123,25 @@ def main():
     aabb_min = octree.getMetricMin()
     aabb_max = octree.getMetricMax()
 
+    # Alternatively, classify a dense query grid with getLabels() instead of
+    # reading the tree's leaves with extractPointCloud(). getLabels() returns
+    # -1 (unknown / never observed), 0 (free), or 1 (occupied) for arbitrary
+    # points -- the typical collision-query use. Swap the block above for:
+    #
+    # center = (octree.getMetricMin() + octree.getMetricMax()) / 2
+    # dimension = np.array([64, 64, 64])
+    # origin = center - dimension / 2 * resolution
+    # aabb_min = origin - resolution / 2
+    # aabb_max = origin + dimension * resolution + resolution / 2
+    # grid = np.full(dimension, -1, np.int32)
+    # transform = tf.scale_and_translate(scale=resolution, translate=origin)
+    # points = trimesh.voxel.VoxelGrid(
+    #     encoding=grid, transform=transform
+    # ).points
+    # labels = octree.getLabels(points)
+    # occupied = points[labels == 1]
+    # empty = points[labels == 0]
+
     visualize(
         occupied=occupied,
         empty=empty,

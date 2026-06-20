@@ -66,6 +66,7 @@ cdef extern from "include_and_setting.h" namespace "octomap":
     # iterator_base is bound to its concrete instantiation by C++ name and
     # declared at module scope; the concrete iterators below still inherit it.
     cdef cppclass iterator_base "octomap::OcTree::iterator_base<octomap::OcTreeNode>":
+        iterator_base() except +
         point3d getCoordinate()
         unsigned int getDepth()
         OcTreeKey getIndexKey()
@@ -102,71 +103,37 @@ cdef extern from "include_and_setting.h" namespace "octomap":
             bool operator==(leaf_bbx_iterator &other)
             bool operator!=(leaf_bbx_iterator &other)
 
-cdef extern from "include_and_setting.h" namespace "octomap":
-    cdef cppclass OcTree:
-        OcTree(double resolution) except +
-        OcTree(string _filename) except +
-        OcTreeKey adjustKeyAtDepth(OcTreeKey& key, unsigned int depth)
-        unsigned short int adjustKeyAtDepth(unsigned short int key, unsigned int depth)
-        bool bbxSet()
-        size_t calcNumNodes()
+# Non-templated bases shared by every occupancy octree. The methods declared
+# here dispatch virtually, so they are bound once and reused by both OcTree and
+# ColorOcTree through an AbstractOccupancyOcTree* pointer.
+cdef extern from "octomap/AbstractOcTree.h" namespace "octomap":
+    cdef cppclass AbstractOcTree:
         void clear()
-        OcTreeKey coordToKey(point3d& coord)
-        OcTreeKey coordToKey(point3d& coord, unsigned int depth)
-        bool coordToKeyChecked(point3d& coord, OcTreeKey& key)
-        bool coordToKeyChecked(point3d& coord, unsigned int depth, OcTreeKey& key)
-        bool deleteNode(point3d& value, unsigned int depth)
-        bool castRay(point3d& origin, point3d& direction, point3d& end,
-                     bool ignoreUnknownCells, double maxRange)
-        OcTree* read(string& filename)
-        OcTree* read(istream& s)
         bool write(string& filename)
         bool write(ostream& s)
+        string getTreeType()
+        double getResolution()
+        void setResolution(double r)
+        size_t size()
+        size_t memoryUsage()
+        size_t memoryUsageNode()
+        void getMetricSize(double& x, double& y, double& z)
+        void getMetricMin(double& x, double& y, double& z)
+        void getMetricMax(double& x, double& y, double& z)
+
+cdef extern from "octomap/AbstractOccupancyOcTree.h" namespace "octomap":
+    cdef cppclass AbstractOccupancyOcTree(AbstractOcTree):
         bool readBinary(string& filename)
         bool readBinary(istream& s)
         bool writeBinary(string& filename)
         bool writeBinary(ostream& s)
         bool isNodeOccupied(OcTreeNode& occupancyNode)
         bool isNodeAtThreshold(OcTreeNode& occupancyNode)
-        void insertPointCloud(Pointcloud& scan, point3d& sensor_origin,
-                              double maxrange, bool lazy_eval, bool discretize)
-        OccupancyOcTreeBase[OcTreeNode].tree_iterator begin_tree(unsigned char maxDepth) except +
-        OccupancyOcTreeBase[OcTreeNode].tree_iterator end_tree() except +
-        OccupancyOcTreeBase[OcTreeNode].leaf_iterator begin_leafs(unsigned char maxDepth) except +
-        OccupancyOcTreeBase[OcTreeNode].leaf_iterator end_leafs() except +
-        OccupancyOcTreeBase[OcTreeNode].leaf_bbx_iterator begin_leafs_bbx(point3d &min, point3d &max, unsigned char maxDepth) except +
-        OccupancyOcTreeBase[OcTreeNode].leaf_bbx_iterator end_leafs_bbx() except +
-        point3d getBBXBounds()
-        point3d getBBXCenter()
-        point3d getBBXMax()
-        point3d getBBXMin()
-        OcTreeNode* getRoot()
-        size_t getNumLeafNodes()
-        double getResolution()
-        unsigned int getTreeDepth()
-        string getTreeType()
-        bool inBBX(point3d& p)
-        point3d keyToCoord(OcTreeKey& key)
-        point3d keyToCoord(OcTreeKey& key, unsigned int depth)
-        unsigned long long memoryFullGrid()
-        size_t memoryUsage()
-        size_t memoryUsageNode()
-        void resetChangeDetection()
-        OcTreeNode* search(double x, double y, double z, unsigned int depth)
-        OcTreeNode* search(point3d& value, unsigned int depth)
-        OcTreeNode* search(OcTreeKey& key, unsigned int depth)
-        void setBBXMax(point3d& max)
-        void setBBXMin(point3d& min)
-        void setResolution(double r)
-        size_t size()
-        void toMaxLikelihood()
-        OcTreeNode* updateNode(double x, double y, double z, float log_odds_update, bool lazy_eval)
-        OcTreeNode* updateNode(double x, double y, double z, bool occupied, bool lazy_eval)
+        OcTreeNode* updateNode(point3d& value, float log_odds_update, bool lazy_eval)
+        OcTreeNode* updateNode(point3d& value, bool occupied, bool lazy_eval)
         OcTreeNode* updateNode(OcTreeKey& key, float log_odds_update, bool lazy_eval)
         OcTreeNode* updateNode(OcTreeKey& key, bool occupied, bool lazy_eval)
-        void updateInnerOccupancy()
-        void useBBXLimit(bool enable)
-        double volume()
+        void toMaxLikelihood()
 
         double getClampingThresMax()
         float getClampingThresMaxLog()
@@ -186,9 +153,54 @@ cdef extern from "include_and_setting.h" namespace "octomap":
         void setProbHit(double prob)
         void setProbMiss(double prob)
 
-        void getMetricSize(double& x, double& y, double& z)
-        void getMetricMin(double& x, double& y, double& z)
-        void getMetricMax(double& x, double& y, double& z)
+cdef extern from "include_and_setting.h" namespace "octomap":
+    # OcTree's own surface is the templated half: every method below lives on
+    # OccupancyOcTreeBase<OcTreeNode> and is typed on the concrete node, so it
+    # cannot be reached through the AbstractOccupancyOcTree base above.
+    cdef cppclass OcTree(AbstractOccupancyOcTree):
+        OcTree(double resolution) except +
+        OcTree(string _filename) except +
+        OcTreeKey adjustKeyAtDepth(OcTreeKey& key, unsigned int depth)
+        unsigned short int adjustKeyAtDepth(unsigned short int key, unsigned int depth)
+        bool bbxSet()
+        size_t calcNumNodes()
+        OcTreeKey coordToKey(point3d& coord)
+        OcTreeKey coordToKey(point3d& coord, unsigned int depth)
+        bool coordToKeyChecked(point3d& coord, OcTreeKey& key)
+        bool coordToKeyChecked(point3d& coord, unsigned int depth, OcTreeKey& key)
+        bool deleteNode(point3d& value, unsigned int depth)
+        bool castRay(point3d& origin, point3d& direction, point3d& end,
+                     bool ignoreUnknownCells, double maxRange)
+        OcTree* read(string& filename)
+        OcTree* read(istream& s)
+        void insertPointCloud(Pointcloud& scan, point3d& sensor_origin,
+                              double maxrange, bool lazy_eval, bool discretize)
+        OccupancyOcTreeBase[OcTreeNode].tree_iterator begin_tree(unsigned char maxDepth) except +
+        OccupancyOcTreeBase[OcTreeNode].tree_iterator end_tree() except +
+        OccupancyOcTreeBase[OcTreeNode].leaf_iterator begin_leafs(unsigned char maxDepth) except +
+        OccupancyOcTreeBase[OcTreeNode].leaf_iterator end_leafs() except +
+        OccupancyOcTreeBase[OcTreeNode].leaf_bbx_iterator begin_leafs_bbx(point3d &min, point3d &max, unsigned char maxDepth) except +
+        OccupancyOcTreeBase[OcTreeNode].leaf_bbx_iterator end_leafs_bbx() except +
+        point3d getBBXBounds()
+        point3d getBBXCenter()
+        point3d getBBXMax()
+        point3d getBBXMin()
+        OcTreeNode* getRoot()
+        size_t getNumLeafNodes()
+        unsigned int getTreeDepth()
+        bool inBBX(point3d& p)
+        point3d keyToCoord(OcTreeKey& key)
+        point3d keyToCoord(OcTreeKey& key, unsigned int depth)
+        unsigned long long memoryFullGrid()
+        void resetChangeDetection()
+        OcTreeNode* search(double x, double y, double z, unsigned int depth)
+        OcTreeNode* search(point3d& value, unsigned int depth)
+        OcTreeNode* search(OcTreeKey& key, unsigned int depth)
+        void setBBXMax(point3d& max)
+        void setBBXMin(point3d& min)
+        void updateInnerOccupancy()
+        void useBBXLimit(bool enable)
+        double volume()
 
         void expandNode(OcTreeNode* node)
         OcTreeNode* createNodeChild(OcTreeNode *node, unsigned int childIdx)
@@ -196,3 +208,77 @@ cdef extern from "include_and_setting.h" namespace "octomap":
         bool isNodeCollapsible(const OcTreeNode* node)
         void deleteNodeChild(OcTreeNode *node, unsigned int childIdx)
         bool pruneNode(OcTreeNode *node)
+
+cdef extern from "octomap/ColorOcTree.h" namespace "octomap":
+    # ColorOcTreeNode::Color is a nested struct; bind it by its qualified C++
+    # name so it can be referenced at module scope.
+    cdef cppclass ColorOcTreeNodeColor "octomap::ColorOcTreeNode::Color":
+        unsigned char r
+        unsigned char g
+        unsigned char b
+
+    cdef cppclass ColorOcTreeNode(OcTreeNode):
+        ColorOcTreeNodeColor getColor()
+        void setColor(unsigned char r, unsigned char g, unsigned char b)
+        bool isColorSet()
+        ColorOcTreeNodeColor getAverageChildColor()
+
+cdef extern from "include_and_setting.h" namespace "octomap":
+    # ColorOcTree mirrors OcTree's templated half over ColorOcTreeNode; the
+    # non-templated half is reached through AbstractOccupancyOcTree (see above).
+    cdef cppclass ColorOcTree(AbstractOccupancyOcTree):
+        ColorOcTree(double resolution) except +
+        ColorOcTreeNode* setNodeColor(OcTreeKey& key, unsigned char r, unsigned char g, unsigned char b)
+        ColorOcTreeNode* setNodeColor(float x, float y, float z, unsigned char r, unsigned char g, unsigned char b)
+        ColorOcTreeNode* averageNodeColor(OcTreeKey& key, unsigned char r, unsigned char g, unsigned char b)
+        ColorOcTreeNode* averageNodeColor(float x, float y, float z, unsigned char r, unsigned char g, unsigned char b)
+        ColorOcTreeNode* integrateNodeColor(OcTreeKey& key, unsigned char r, unsigned char g, unsigned char b)
+        ColorOcTreeNode* integrateNodeColor(float x, float y, float z, unsigned char r, unsigned char g, unsigned char b)
+        void updateInnerOccupancy()
+
+        OcTreeKey adjustKeyAtDepth(OcTreeKey& key, unsigned int depth)
+        unsigned short int adjustKeyAtDepth(unsigned short int key, unsigned int depth)
+        bool bbxSet()
+        size_t calcNumNodes()
+        OcTreeKey coordToKey(point3d& coord)
+        OcTreeKey coordToKey(point3d& coord, unsigned int depth)
+        bool coordToKeyChecked(point3d& coord, OcTreeKey& key)
+        bool coordToKeyChecked(point3d& coord, unsigned int depth, OcTreeKey& key)
+        bool deleteNode(point3d& value, unsigned int depth)
+        bool castRay(point3d& origin, point3d& direction, point3d& end,
+                     bool ignoreUnknownCells, double maxRange)
+        ColorOcTree* read(string& filename)
+        ColorOcTree* read(istream& s)
+        void insertPointCloud(Pointcloud& scan, point3d& sensor_origin,
+                              double maxrange, bool lazy_eval, bool discretize)
+        OccupancyOcTreeBase[ColorOcTreeNode].tree_iterator begin_tree(unsigned char maxDepth) except +
+        OccupancyOcTreeBase[ColorOcTreeNode].tree_iterator end_tree() except +
+        OccupancyOcTreeBase[ColorOcTreeNode].leaf_iterator begin_leafs(unsigned char maxDepth) except +
+        OccupancyOcTreeBase[ColorOcTreeNode].leaf_iterator end_leafs() except +
+        OccupancyOcTreeBase[ColorOcTreeNode].leaf_bbx_iterator begin_leafs_bbx(point3d &min, point3d &max, unsigned char maxDepth) except +
+        OccupancyOcTreeBase[ColorOcTreeNode].leaf_bbx_iterator end_leafs_bbx() except +
+        point3d getBBXBounds()
+        point3d getBBXCenter()
+        point3d getBBXMax()
+        point3d getBBXMin()
+        ColorOcTreeNode* getRoot()
+        size_t getNumLeafNodes()
+        unsigned int getTreeDepth()
+        bool inBBX(point3d& p)
+        point3d keyToCoord(OcTreeKey& key)
+        point3d keyToCoord(OcTreeKey& key, unsigned int depth)
+        unsigned long long memoryFullGrid()
+        void resetChangeDetection()
+        ColorOcTreeNode* search(double x, double y, double z, unsigned int depth)
+        ColorOcTreeNode* search(point3d& value, unsigned int depth)
+        ColorOcTreeNode* search(OcTreeKey& key, unsigned int depth)
+        void setBBXMax(point3d& max)
+        void setBBXMin(point3d& min)
+        void useBBXLimit(bool enable)
+        double volume()
+        void expandNode(ColorOcTreeNode* node)
+        ColorOcTreeNode* createNodeChild(ColorOcTreeNode *node, unsigned int childIdx)
+        ColorOcTreeNode* getNodeChild(ColorOcTreeNode *node, unsigned int childIdx)
+        bool isNodeCollapsible(const ColorOcTreeNode* node)
+        void deleteNodeChild(ColorOcTreeNode *node, unsigned int childIdx)
+        bool pruneNode(ColorOcTreeNode *node)

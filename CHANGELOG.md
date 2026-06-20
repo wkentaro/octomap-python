@@ -11,6 +11,21 @@ This history was backfilled from git and PyPI release records. Releases through
 1.8.0.post12 used a `.postN` suffix and predate git tags, so each is dated by its
 PyPI upload.
 
+## [Unreleased]
+
+### Added
+- `ColorOcTree` and `ColorOcTreeNode` bindings, exposing a per-voxel RGB color
+  (`setNodeColor` / `averageNodeColor` / `integrateNodeColor`, node `getColor` /
+  `setColor` / `isColorSet` / `getAverageChildColor`) on top of the shared
+  occupancy, search, iterator, and IO surface. Color is serialized by the full
+  map format (`write` / `read`, `.ot`); the binary format (`.bt`) stores
+  occupancy only.
+
+### Changed
+- The occupancy/search/IO surface shared by every tree now lives on a common
+  `OccupancyOcTreeBase`, which both `OcTree` and `ColorOcTree` extend. `OcTree`'s
+  public API is unchanged.
+
 ## [1.10.0.0] - 2026-06-20
 
 Bumps the bundled OctoMap C++ library from 1.8.0 to 1.10.0, the current upstream

@@ -14,7 +14,7 @@ occupied, free, or still unknown. This package exposes that C++ library to
 Python with NumPy arrays as the interchange format, so point clouds and queries
 are plain `np.ndarray`s.
 
-<img src="examples/.readme/insertPointCloud.jpg" height="200px" />
+<img src="assets/teaser.jpg" width="75%" />
 
 ## Install
 
@@ -64,10 +64,27 @@ restored = octomap.OcTree(0.1)
 restored.readBinary("tree.bt")
 ```
 
+`ColorOcTree` adds a per-voxel RGB color on top of the same occupancy API:
+
+```python
+octree = octomap.ColorOcTree(0.1)
+point = np.array([1.0, 2.0, 3.0])
+octree.updateNode(point, True)
+octree.setNodeColor(point, 255, 0, 0)
+octree.updateInnerOccupancy()
+
+print(octree.search(point).getColor())  # (255, 0, 0)
+
+# Color is preserved by the full map format (.ot), not the binary format (.bt).
+octree.write("tree.ot")
+restored = octomap.ColorOcTree.read("tree.ot")
+```
+
 ## Examples
 
-Runnable demos live in [`examples/`](examples); the teaser above is
-`insertPointCloud.py`:
+Runnable demos live in [`examples/`](examples); the teaser above combines
+`insertPointCloud.py` (pointcloud / occupied / empty) and
+`insertPointCloudColor.py` (occupied in color):
 
 ```bash
 git clone --recursive https://github.com/wkentaro/octomap-python.git
@@ -77,6 +94,9 @@ uv sync --group examples
 cd examples
 uv run python insertPointCloud.py
 ```
+
+`insertPointCloudColor.py` is the same demo on a `ColorOcTree`, rendering each
+occupied voxel in its measured RGB color.
 
 ## Release
 
