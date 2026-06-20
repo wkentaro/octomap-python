@@ -24,30 +24,31 @@ of life; the minimum is now Python 3.10.
   `setColor` / `isColorSet` / `getAverageChildColor`) on top of the shared
   occupancy, search, iterator, and IO surface. Color is serialized by the full
   map format (`write` / `read`, `.ot`); the binary format (`.bt`) stores
-  occupancy only.
-- Binary wheels for CPython 3.14.
-- Binary wheels for Windows AMD64.
+  occupancy only (#66).
+- Binary wheels for CPython 3.14 (#59).
+- Binary wheels for Windows AMD64 (#63).
 - A shipped `octomap.pyi` type stub for the compiled extension, enabling static
-  type checkers and editor completion.
+  type checkers and editor completion (#65).
 
 ### Changed
 - The occupancy/search/IO surface shared by every tree now lives on a common
   `OccupancyOcTreeBase`, which both `OcTree` and `ColorOcTree` extend. `OcTree`'s
-  public API is unchanged.
+  public API is unchanged (#66).
 - Bundled OctoMap C++ library upgraded from 1.8.0 to 1.10.0, which carries
-  upstream's modern-compiler and C++17/20 build fixes.
+  upstream's modern-compiler and C++17/20 build fixes (#60).
 - `dynamicEDTOctomap.cpp` is no longer compiled: OctoMap made DynamicEDTOctomap a
   header-only template (over the tree type) in 1.9.0, so it is now instantiated
-  through `octomap.pyx` instead.
-- Build pinned to Cython 3 and NumPy 2.
+  through `octomap.pyx` instead (#60).
+- Build pinned to Cython 3 and NumPy 2 (#65).
 
 ### Fixed
 - `OcTree.read()` and `ColorOcTree.read()` now raise instead of segfaulting when
-  given a path that does not resolve to a valid OctoMap file.
-- `adjustKeyAtDepth` now returns an `OcTreeKey` instance.
+  given a path that does not resolve to a valid OctoMap file (#70).
+- `adjustKeyAtDepth` now returns an `OcTreeKey` instance (#61).
 
 ### Removed
-- Python 3.9 support, which reached end of life; the minimum is now Python 3.10.
+- Python 3.9 support, which reached end of life; the minimum is now Python 3.10
+  (#71).
 
 ## [1.8.0.13] - 2026-06-20
 
