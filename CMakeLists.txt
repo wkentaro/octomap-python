@@ -16,7 +16,7 @@ include(FetchContent)
 # OctoMap is fetched and pinned to a release tag rather than vendored as a git
 # submodule. Bumping the version is a one-line change to GIT_TAG.
 #
-# Pinned to v1.8.0 to match the package version line (octomap-python 1.8.0.postN
+# Pinned to v1.8.0 to match the package version line (octomap-python 1.8.0.N
 # bundles octomap 1.8.0).
 FetchContent_Declare(
   octomap
