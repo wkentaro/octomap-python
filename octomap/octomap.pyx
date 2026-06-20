@@ -589,6 +589,13 @@ cdef class OccupancyOcTreeBase:
         self.thisptr.getMetricMax(x, y, z)
         return np.array([x, y, z], dtype=float)
 
+def _raise_read_error(serialized, filename, type_name):
+    if serialized:
+        raise ValueError(f"failed to deserialize {type_name} from the given bytes")
+    path = os.fsdecode(filename)
+    os.stat(path)  # raises FileNotFoundError if the path is missing
+    raise OSError(f"failed to read {type_name} from {path!r}")
+
 def _octree_read(filename):
     """
     Deserialize an OcTree from a file path or from its serialized bytes.
@@ -599,12 +606,15 @@ def _octree_read(filename):
     # still alive, then free the placeholder we are replacing
     cdef defs.OcTree* placeholder = <defs.OcTree*>tree.thisptr
     filename = os.fsencode(filename)
-    if filename.startswith(b"# Octomap OcTree file"):
+    serialized = filename.startswith(b"# Octomap OcTree file")
+    if serialized:
         iss.str(string(<char*?>filename, len(filename)))
         tree.thisptr = <defs.OcTree*>placeholder.read(<defs.istream&?>iss)
     else:
         tree.thisptr = <defs.OcTree*>placeholder.read(string(<char*?>filename))
     del placeholder
+    if tree.thisptr == NULL:
+        _raise_read_error(serialized=serialized, filename=filename, type_name="OcTree")
     return tree
 
 cdef class OcTree(OccupancyOcTreeBase):
@@ -1036,12 +1046,15 @@ def _color_octree_read(filename):
     # still alive, then free the placeholder we are replacing
     cdef defs.ColorOcTree* placeholder = <defs.ColorOcTree*>tree.thisptr
     filename = os.fsencode(filename)
-    if filename.startswith(b"# Octomap OcTree file"):
+    serialized = filename.startswith(b"# Octomap OcTree file")
+    if serialized:
         iss.str(string(<char*?>filename, len(filename)))
         tree.thisptr = <defs.ColorOcTree*>placeholder.read(<defs.istream&?>iss)
     else:
         tree.thisptr = <defs.ColorOcTree*>placeholder.read(string(<char*?>filename))
     del placeholder
+    if tree.thisptr == NULL:
+        _raise_read_error(serialized=serialized, filename=filename, type_name="ColorOcTree")
     return tree
 
 cdef class ColorOcTree(OccupancyOcTreeBase):

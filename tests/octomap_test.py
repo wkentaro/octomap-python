@@ -70,6 +70,18 @@ def test_path_objects(tree: octomap.OcTree, tmp_path: pathlib.Path) -> None:
     assert tree_full.write() == expected_ot
 
 
+def test_read_missing_path_raises(tmp_path: pathlib.Path) -> None:
+    with pytest.raises(FileNotFoundError):
+        octomap.OcTree.read(tmp_path / "nonexistent.ot")
+
+
+def test_read_unreadable_file_raises(tmp_path: pathlib.Path) -> None:
+    corrupt = tmp_path / "corrupt.ot"
+    corrupt.write_bytes(b"not an octree")
+    with pytest.raises(OSError, match="failed to read"):
+        octomap.OcTree.read(corrupt)
+
+
 def test_checkTree(tree: octomap.OcTree) -> None:
     tree.readBinary(TEST_BT)
     data = tree.write()
