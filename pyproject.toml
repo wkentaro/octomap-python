@@ -34,16 +34,15 @@ Homepage = "https://github.com/wkentaro/octomap-python"
 
 [dependency-groups]
 dev = ["ruff", "pytest"]
-# The examples use an old GUI stack pinned to keep it working: glooey 0.3.6
-# needs pyglet 1.x APIs (e.g. graphics.OrderedGroup), trimesh.viewer.SceneWidget
-# was removed in trimesh 4.8.3, and glooey's autoprop/typeguard chain relies on
-# ast.Str (removed in Python 3.12), so the examples run on Python <=3.11; see
-# .python-version.
+# The examples render with trimesh's pyglet-based GL viewer, which still
+# requires pyglet 1.x upstream (trimesh.viewer hard-blocks pyglet 2; see
+# trimesh PR #2365), so pyglet stays pinned <2. glooey was dropped in favor of
+# a single combined scene, which frees the examples from glooey's old pins
+# (Python <=3.11, trimesh <4.8.3) so they run on current Python and trimesh.
 examples = [
-    "glooey==0.3.6",
     "imgviz>=1.2.0",
     "pyglet<2",
-    "trimesh[easy]<4.8.3",
+    "trimesh[easy]>=4.8.3",
 ]
 
 [tool.pytest.ini_options]
