@@ -6,5 +6,6 @@
 #endif
 #include <octomap/OccupancyOcTreeBase.h>
 #include <octomap/OcTree.h>
+#include <octomap/ColorOcTree.h>
 
 #endif
