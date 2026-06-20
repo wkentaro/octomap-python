@@ -62,20 +62,24 @@ cdef extern from "octomap/OcTreeKey.h" namespace "octomap":
         unsigned short int& operator[](unsigned int i)
 
 cdef extern from "include_and_setting.h" namespace "octomap":
-    cdef cppclass OccupancyOcTreeBase[T]:
-        cppclass iterator_base:
-            point3d getCoordinate()
-            unsigned int getDepth()
-            OcTreeKey getIndexKey()
-            OcTreeKey& getKey()
-            double getSize() except +
-            double getX() except +
-            double getY() except +
-            double getZ() except +
-            OcTreeNode& operator*()
-            bool operator==(iterator_base &other)
-            bool operator!=(iterator_base &other)
+    # OcTree's iterators became templated over the node type in OctoMap 1.9.0, so
+    # iterator_base is bound to its concrete instantiation by C++ name and
+    # declared at module scope; the concrete iterators below still inherit it.
+    cdef cppclass iterator_base "octomap::OcTree::iterator_base<octomap::OcTreeNode>":
+        point3d getCoordinate()
+        unsigned int getDepth()
+        OcTreeKey getIndexKey()
+        OcTreeKey& getKey()
+        double getSize() except +
+        double getX() except +
+        double getY() except +
+        double getZ() except +
+        OcTreeNode& operator*()
+        bool operator==(iterator_base &other)
+        bool operator!=(iterator_base &other)
 
+cdef extern from "include_and_setting.h" namespace "octomap":
+    cdef cppclass OccupancyOcTreeBase[T]:
         cppclass tree_iterator(iterator_base):
             tree_iterator() except +
             tree_iterator(tree_iterator&) except +

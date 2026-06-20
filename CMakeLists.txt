@@ -16,12 +16,12 @@ include(FetchContent)
 # OctoMap is fetched and pinned to a release tag rather than vendored as a git
 # submodule. Bumping the version is a one-line change to GIT_TAG.
 #
-# Pinned to v1.8.0 to match the package version line (octomap-python 1.8.0.N
-# bundles octomap 1.8.0).
+# Pinned to v1.10.0 to match the package version line (octomap-python 1.10.0.N
+# bundles octomap 1.10.0).
 FetchContent_Declare(
   octomap
   GIT_REPOSITORY https://github.com/OctoMap/octomap.git
-  GIT_TAG v1.8.0
+  GIT_TAG v1.10.0
   GIT_SHALLOW TRUE
 )
 # Populate the sources only; octomap's own CMake build is intentionally not run.
@@ -45,7 +45,9 @@ set(edt_src "${octomap_dir}/dynamicEDT3D/src")
 # OctoMap, octomath and dynamicEDT3D are compiled straight into the extension
 # so the module is self-contained: no octomap shared libraries to resolve at
 # import time. octovis/Qt are simply never referenced here. The source lists
-# mirror octomap's own CMakeLists for the pinned release.
+# mirror octomap's own CMakeLists for the pinned release. DynamicEDTOctomap is
+# header-only since octomap v1.9.0 (templated over the tree type), so only
+# dynamicEDT3D.cpp is compiled; the template is instantiated via octomap.pyx.
 set(octomap_sources
   ${octomap_src}/AbstractOcTree.cpp
   ${octomap_src}/AbstractOccupancyOcTree.cpp
@@ -60,7 +62,6 @@ set(octomap_sources
   ${octomap_src}/math/Quaternion.cpp
   ${octomap_src}/math/Pose6D.cpp
   ${edt_src}/dynamicEDT3D.cpp
-  ${edt_src}/dynamicEDTOctomap.cpp
 )
 
 add_custom_command(

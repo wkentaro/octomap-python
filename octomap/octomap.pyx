@@ -108,7 +108,7 @@ cdef class iterator_base:
     Iterator over the complete tree (inner nodes and leafs).
     """
     cdef defs.OcTree *treeptr
-    cdef defs.OccupancyOcTreeBase[defs.OcTreeNode].iterator_base *thisptr
+    cdef defs.iterator_base *thisptr
     def __cinit__(self):
         pass
 
