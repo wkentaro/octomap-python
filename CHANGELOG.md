@@ -4,17 +4,27 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [PEP 440](https://peps.python.org/pep-0440/): the first three
-segments track the bundled OctoMap C++ library version (currently 1.8.0), and a
+segments track the bundled OctoMap C++ library version (currently 1.10.0), and a
 fourth segment counts binding revisions on that upstream.
 
 This history was backfilled from git and PyPI release records. Releases through
 1.8.0.post12 used a `.postN` suffix and predate git tags, so each is dated by its
 PyPI upload.
 
-## [Unreleased]
+## [1.10.0.0] - 2026-06-20
+
+Bumps the bundled OctoMap C++ library from 1.8.0 to 1.10.0, the current upstream
+release. No binding API changes.
 
 ### Added
 - Binary wheels for CPython 3.14.
+
+### Changed
+- Bundled OctoMap C++ library upgraded from 1.8.0 to 1.10.0, which carries
+  upstream's modern-compiler and C++17/20 build fixes.
+- `dynamicEDTOctomap.cpp` is no longer compiled: OctoMap made DynamicEDTOctomap a
+  header-only template (over the tree type) in 1.9.0, so it is now instantiated
+  through `octomap.pyx` instead.
 
 ## [1.8.0.13] - 2026-06-20
 
