@@ -64,6 +64,22 @@ restored = octomap.OcTree(0.1)
 restored.readBinary("tree.bt")
 ```
 
+`ColorOcTree` adds a per-voxel RGB color on top of the same occupancy API:
+
+```python
+octree = octomap.ColorOcTree(0.1)
+point = np.array([1.0, 2.0, 3.0])
+octree.updateNode(point, True)
+octree.setNodeColor(point, 255, 0, 0)
+octree.updateInnerOccupancy()
+
+print(octree.search(point).getColor())  # (255, 0, 0)
+
+# Color is preserved by the full map format (.ot), not the binary format (.bt).
+octree.write("tree.ot")
+restored = octomap.ColorOcTree.read("tree.ot")
+```
+
 ## Examples
 
 Runnable demos live in [`examples/`](examples); the teaser above is
