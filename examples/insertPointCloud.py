@@ -53,6 +53,12 @@ def visualize(
         resolution=(width, height), focal=(K[0, 0], K[1, 1])
     )
     camera_marker = trimesh.creation.camera_marker(camera, marker_height=0.1)
+    # trimesh's camera_marker opens toward -Z (OpenGL convention) but the
+    # depth point cloud uses OpenCV (+Z forward). Rotate the marker 180 deg
+    # about X so the frustum opens toward the data instead of away from it.
+    opencv_from_opengl = tf.rotation_matrix(np.pi, [1, 0, 0])
+    for geometry in camera_marker:
+        geometry.apply_transform(opencv_from_opengl)
 
     # initial camera pose
     camera_transform = np.array(
