@@ -309,6 +309,7 @@ def test_dynamicEDT(tree: octomap.OcTree) -> None:
     query = np.array([1.0, 0.0, 0.0])
     distance, obstacle = tree.dynamicEDT_getDistanceAndClosestObstacle(query)
     assert distance == tree.dynamicEDT_getDistance(query)
+    assert obstacle is not None
     assert np.allclose(obstacle, [0.0, 0.0, 0.0], atol=res)
 
     # a query outside the distance map reports -1.0 and no obstacle
