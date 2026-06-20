@@ -11,6 +11,11 @@ This history was backfilled from git and PyPI release records. Releases through
 1.8.0.post12 used a `.postN` suffix and predate git tags, so each is dated by its
 PyPI upload.
 
+## [Unreleased]
+
+### Added
+- Binary wheels for CPython 3.14.
+
 ## [1.8.0.13] - 2026-06-20
 
 The first release in over six years: a full build and tooling modernization plus
