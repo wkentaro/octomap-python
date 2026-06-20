@@ -10,7 +10,7 @@ license = { text = "BSD-3-Clause" }
 maintainers = [
     { name = "Kentaro Wada", email = "www.kentaro.wada@gmail.com" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = ["numpy"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -19,7 +19,6 @@ classifiers = [
     "Natural Language :: English",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -72,9 +71,9 @@ pattern = '!\[([^\]]*)\]\((?!https?://)([^)]+)\)'
 replacement = '![\1](https://raw.githubusercontent.com/wkentaro/octomap-python/main/\2)'
 
 [tool.cibuildwheel]
-# Py 3.9-3.14; the trailing "t" free-threaded builds (e.g. cp314t-*) are excluded
+# Py 3.10-3.14; the trailing "t" free-threaded builds (e.g. cp314t-*) are excluded
 # by matching only cp3XX-* without the "t".
-build = "cp39-* cp310-* cp311-* cp312-* cp313-* cp314-*"
+build = "cp310-* cp311-* cp312-* cp313-* cp314-*"
 # Only manylinux is shipped; musllinux (Alpine) users build from the sdist.
 skip = "*-musllinux*"
 test-requires = "pytest"
