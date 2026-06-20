@@ -79,6 +79,20 @@ def test_Resolution(tree: octomap.OcTree) -> None:
     assert tree.getResolution() == pytest.approx(r)
 
 
+def test_adjustKeyAtDepth(tree: octomap.OcTree) -> None:
+    key = tree.coordToKey(np.array([1.0, 2.0, 3.0]))
+
+    # adjusting to the full tree depth leaves the key unchanged
+    assert tree.adjustKeyAtDepth(key, tree.getTreeDepth()) == key
+
+    # at a coarser depth the key snaps to that depth's voxel and is stable
+    # under a second adjustment
+    coarse_depth = tree.getTreeDepth() - 2
+    coarse = tree.adjustKeyAtDepth(key, coarse_depth)
+    assert isinstance(coarse, octomap.OcTreeKey)
+    assert tree.adjustKeyAtDepth(coarse, coarse_depth) == coarse
+
+
 def test_Node(tree: octomap.OcTree) -> None:
     tree.insertPointCloud(
         np.array([[1.0, 0.0, 0.0]]), np.array([0.0, 0.0, 0.0])
