@@ -46,6 +46,30 @@ def test_str_paths(tree: octomap.OcTree, tmp_path: pathlib.Path) -> None:
     assert tree_full.write() == expected_ot
 
 
+def test_path_objects(tree: octomap.OcTree, tmp_path: pathlib.Path) -> None:
+    tree.updateNode(np.array([1.0, 2.0, 3.0]), True)
+    tree.updateInnerOccupancy()
+    bt_path = tmp_path / "tree.bt"
+    ot_path = tmp_path / "tree.ot"
+
+    # writeBinary / readBinary round-trip with pathlib.Path objects
+    assert tree.writeBinary(bt_path)
+    expected_bt = tree.writeBinary()
+    tree_bin = octomap.OcTree(0.1)
+    assert tree_bin.readBinary(bt_path)
+    assert tree_bin.writeBinary() == expected_bt
+
+    # the constructor reads a .bt file from a pathlib.Path
+    tree_ctor = octomap.OcTree(bt_path)
+    assert tree_ctor.writeBinary() == expected_bt
+
+    # write / read round-trip with pathlib.Path objects
+    assert tree.write(ot_path)
+    expected_ot = tree.write()
+    tree_full = octomap.OcTree.read(ot_path)
+    assert tree_full.write() == expected_ot
+
+
 def test_checkTree(tree: octomap.OcTree) -> None:
     tree.readBinary(TEST_BT)
     data = tree.write()
