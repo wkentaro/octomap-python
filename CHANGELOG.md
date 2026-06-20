@@ -11,7 +11,12 @@ This history was backfilled from git and PyPI release records. Releases through
 1.8.0.post12 used a `.postN` suffix and predate git tags, so each is dated by its
 PyPI upload.
 
-## [Unreleased]
+## [1.10.0.0] - 2026-06-20
+
+Bumps the bundled OctoMap C++ library from 1.8.0 to 1.10.0 and adds
+`ColorOcTree`/`ColorOcTreeNode` bindings, Windows AMD64 wheels, and a shipped
+type stub, alongside several binding fixes. Drops Python 3.9, which reached end
+of life; the minimum is now Python 3.10.
 
 ### Added
 - `ColorOcTree` and `ColorOcTreeNode` bindings, exposing a per-voxel RGB color
@@ -20,29 +25,29 @@ PyPI upload.
   occupancy, search, iterator, and IO surface. Color is serialized by the full
   map format (`write` / `read`, `.ot`); the binary format (`.bt`) stores
   occupancy only.
+- Binary wheels for CPython 3.14.
+- Binary wheels for Windows AMD64.
+- A shipped `octomap.pyi` type stub for the compiled extension, enabling static
+  type checkers and editor completion.
 
 ### Changed
 - The occupancy/search/IO surface shared by every tree now lives on a common
   `OccupancyOcTreeBase`, which both `OcTree` and `ColorOcTree` extend. `OcTree`'s
   public API is unchanged.
-
-### Removed
-- Python 3.9 support, which reached end of life; the minimum is now Python 3.10.
-
-## [1.10.0.0] - 2026-06-20
-
-Bumps the bundled OctoMap C++ library from 1.8.0 to 1.10.0, the current upstream
-release. No binding API changes.
-
-### Added
-- Binary wheels for CPython 3.14.
-
-### Changed
 - Bundled OctoMap C++ library upgraded from 1.8.0 to 1.10.0, which carries
   upstream's modern-compiler and C++17/20 build fixes.
 - `dynamicEDTOctomap.cpp` is no longer compiled: OctoMap made DynamicEDTOctomap a
   header-only template (over the tree type) in 1.9.0, so it is now instantiated
   through `octomap.pyx` instead.
+- Build pinned to Cython 3 and NumPy 2.
+
+### Fixed
+- `OcTree.read()` and `ColorOcTree.read()` now raise instead of segfaulting when
+  given a path that does not resolve to a valid OctoMap file.
+- `adjustKeyAtDepth` now returns an `OcTreeKey` instance.
+
+### Removed
+- Python 3.9 support, which reached end of life; the minimum is now Python 3.10.
 
 ## [1.8.0.13] - 2026-06-20
 
