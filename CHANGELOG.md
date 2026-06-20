@@ -26,6 +26,9 @@ PyPI upload.
   `OccupancyOcTreeBase`, which both `OcTree` and `ColorOcTree` extend. `OcTree`'s
   public API is unchanged.
 
+### Removed
+- Python 3.9 support, which reached end of life; the minimum is now Python 3.10.
+
 ## [1.10.0.0] - 2026-06-20
 
 Bumps the bundled OctoMap C++ library from 1.8.0 to 1.10.0, the current upstream
