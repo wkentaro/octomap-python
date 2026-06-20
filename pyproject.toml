@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "octomap-python"
-version = "1.8.0.post13"
+version = "1.8.0.13"
 description = "Python binding of the OctoMap library."
 license = { text = "BSD-3-Clause" }
 maintainers = [

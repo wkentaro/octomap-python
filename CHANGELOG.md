@@ -2,14 +2,16 @@
 
 All notable changes to this project are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and the project uses [PEP 440](https://peps.python.org/pep-0440/) post-release
-versioning. The bundled OctoMap C++ library is pinned to v1.8.0.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+Versions follow [PEP 440](https://peps.python.org/pep-0440/): the first three
+segments track the bundled OctoMap C++ library version (currently 1.8.0), and a
+fourth segment counts binding revisions on that upstream.
 
-This history was backfilled from git and PyPI release records. The `1.8.0.postN`
-series predates git tags, so each release is dated by its PyPI upload.
+This history was backfilled from git and PyPI release records. Releases through
+1.8.0.post12 used a `.postN` suffix and predate git tags, so each is dated by its
+PyPI upload.
 
-## [1.8.0.post13] - 2026-06-20
+## [1.8.0.13] - 2026-06-20
 
 The first release in over six years: a full build and tooling modernization plus
 several long-standing binding fixes.
