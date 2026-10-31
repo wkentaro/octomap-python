@@ -1253,6 +1253,32 @@ cdef class ColorOcTree(OccupancyOcTreeBase):
         """Return occupied and free float64 voxel centers, expanding pruned leaves."""
         return _extract_pointcloud(self._tree())
 
+    @boundscheck(False)
+    @wraparound(False)
+    def averageNodeColors(self, const FLOAT_t[:, :] points,
+                          const np.uint8_t[:, :] colors):
+        """Average (N, 3) uint8 RGB measurements in order at existing nodes.
+
+        Points must be finite float32/float64 within the octree bounds.
+        Strided and read-only buffers are accepted without copying.
+        Missing nodes are left unchanged. Call
+        updateInnerOccupancy() after all color updates.
+        """
+        _check_points(points)
+        if colors is None or colors.shape[0] != points.shape[0] or colors.shape[1] != 3:
+            raise ValueError("colors must have shape (N, 3), matching points")
+        cdef Py_ssize_t i
+        cdef float x, y, z
+        cdef double limit = self.thisptr.getResolution() * 32768
+        # Validate the whole batch before changing any node.
+        for i in range(points.shape[0]):
+            x, y, z = points[i, 0], points[i, 1], points[i, 2]
+            if not (-limit <= x < limit and -limit <= y < limit and -limit <= z < limit):
+                raise ValueError("points must be finite and within the octree bounds")
+        for i in range(points.shape[0]):
+            self._tree().averageNodeColor(points[i, 0], points[i, 1], points[i, 2],
+                                          colors[i, 0], colors[i, 1], colors[i, 2])
+
     # The iterator factories reuse the shared tree_iterator / leaf_iterator /
     # leaf_bbx_iterator wrappers. OccupancyOcTreeBase<ColorOcTreeNode>'s
     # iterators have the same layout as the OcTreeNode ones (the node type only

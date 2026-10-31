@@ -15,10 +15,7 @@ def _build_color_octree(points, colors, resolution, maxrange):
         origin=np.array([0, 0, 0], dtype=float),
         maxrange=maxrange,
     )
-    for point, color in zip(points, colors):
-        octree.averageNodeColor(
-            point, int(color[0]), int(color[1]), int(color[2])
-        )
+    octree.averageNodeColors(points, colors)
     octree.updateInnerOccupancy()
     return octree
 
@@ -65,8 +62,8 @@ def main():
 
     octree = octomap.OcTree(resolution)
     # The OcTree takes every valid point (maxrange clips the raycast at 2 m);
-    # the ColorOcTree below uses the tighter z < 2 m mask so its per-point
-    # color loop only visits points it actually inserted.
+    # the ColorOcTree below uses the tighter z < 2 m mask so its color
+    # measurements only visit points it actually inserted.
     octree.insertPointCloud(
         pointcloud=pcd[nonnan],
         origin=np.array([0, 0, 0], dtype=float),

@@ -103,6 +103,26 @@ after float32 conversion. `getLabels` classifies nonfinite and out-of-bounds
 coordinates as unknown. `extractPointCloud` expands pruned leaves into
 resolution-sized voxels, so its output can be much larger than the tree.
 
+For RGB scans, `averageNodeColors` replaces the per-point Python loop:
+
+```python
+octree = octomap.ColorOcTree(0.1)
+octree.insertPointCloud(points, origin=[0, 0, 0])
+colors = np.array([[255, 0, 0], [0, 0, 255]], dtype=np.uint8)
+octree.averageNodeColors(points, colors)
+octree.updateInnerOccupancy()
+```
+
+Colors must be an `(N, 3)` uint8 array matching the points. Updates run in input
+order, with the same averaging as repeated `averageNodeColor` calls. They color
+existing nodes and leave missing nodes unchanged.
+
+Run the repeatable synthetic scan benchmark with
+`uv run python benchmarks/mapping.py`. It reports median timing, timing range,
+and peak allocations tracked by `tracemalloc`, including NumPy arrays but
+excluding native C++ allocations. The map's native memory estimate is reported
+separately. Use `--save results.npz` to save outputs for equivalence checks.
+
 ## Examples
 
 Runnable demos live in [`examples/`](examples). `pointcloud_to_octree.py`
