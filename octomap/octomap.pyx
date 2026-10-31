@@ -79,6 +79,15 @@ cdef _labels(Tree_t* tree, const FLOAT_t[:, :] points):
     return labels
 
 
+cdef _extract_pointcloud(Tree_t* tree):
+    cdef size_t n_occupied = 0, n_free = 0
+    defs.expandedPointCounts(tree, n_occupied, n_free)
+    cdef np.ndarray[DOUBLE_t, ndim=2] occupied = np.empty((n_occupied, 3))
+    cdef np.ndarray[DOUBLE_t, ndim=2] free = np.empty((n_free, 3))
+    defs.extractExpandedPoints(tree, <double*>occupied.data, <double*>free.data)
+    return occupied, free
+
+
 class NullPointerException(Exception):
     """
     Null pointer exception
@@ -807,45 +816,8 @@ cdef class OcTree(OccupancyOcTreeBase):
         return _labels(self._tree(), points)
 
     def extractPointCloud(self):
-        cdef float resolution = self.getResolution()
-
-        cdef list occupied = []
-        cdef list empty = []
-        cdef leaf_iterator it
-        cdef float size
-        cdef int is_occupied
-        cdef np.ndarray[DOUBLE_t, ndim=1] center
-        cdef np.ndarray[DOUBLE_t, ndim=1] origin
-        cdef np.ndarray[np.int64_t, ndim=2] indices
-        cdef np.ndarray[DOUBLE_t, ndim=2] points
-        cdef np.ndarray keep
-        cdef int dimension
-        for it in self.begin_leafs():
-            is_occupied = self.isNodeOccupied(it)
-            size = it.getSize()
-            center = it.getCoordinate()
-
-            dimension = max(1, round(it.getSize() / resolution))
-            origin = center - (dimension / 2 - 0.5) * resolution
-            indices = np.column_stack(np.nonzero(np.ones((dimension, dimension, dimension))))
-            points = origin + indices * np.array(resolution)
-
-            if is_occupied:
-                occupied.append(points)
-            else:
-                empty.append(points)
-
-        cdef np.ndarray[DOUBLE_t, ndim=2] occupied_arr
-        cdef np.ndarray[DOUBLE_t, ndim=2] empty_arr
-        if len(occupied) == 0:
-            occupied_arr = np.zeros((0, 3), dtype=float)
-        else:
-            occupied_arr = np.concatenate(occupied, axis=0)
-        if len(empty) == 0:
-            empty_arr = np.zeros((0, 3), dtype=float)
-        else:
-            empty_arr = np.concatenate(empty, axis=0)
-        return occupied_arr, empty_arr
+        """Return occupied and free float64 voxel centers, expanding pruned leaves."""
+        return _extract_pointcloud(self._tree())
 
     def insertPointCloud(self,
                          const FLOAT_t[:, :] pointcloud,
@@ -1276,6 +1248,10 @@ cdef class ColorOcTree(OccupancyOcTreeBase):
     def getLabels(self, const FLOAT_t[:, :] points):
         """Classify points as -1 unknown, 0 free, or 1 occupied; see OcTree.getLabels."""
         return _labels(self._tree(), points)
+
+    def extractPointCloud(self):
+        """Return occupied and free float64 voxel centers, expanding pruned leaves."""
+        return _extract_pointcloud(self._tree())
 
     # The iterator factories reuse the shared tree_iterator / leaf_iterator /
     # leaf_bbx_iterator wrappers. OccupancyOcTreeBase<ColorOcTreeNode>'s

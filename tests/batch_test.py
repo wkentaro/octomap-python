@@ -87,3 +87,43 @@ def test_batch_insert_rejects_invalid_before_mutation(tree, points, origin):
 def test_batch_insert_empty(tree):
     tree.insertPointCloud(np.empty((0, 3)), np.zeros(3))
     assert tree.size() == 0
+
+
+def reference_extract(tree):
+    resolution = float(np.float32(tree.getResolution()))
+    occupied, free = [], []
+    for leaf in tree.begin_leafs():
+        dimension = max(1, round(leaf.getSize() / resolution))
+        origin = leaf.getCoordinate() - (dimension / 2 - 0.5) * resolution
+        indices = np.column_stack(
+            np.nonzero(np.ones((dimension, dimension, dimension)))
+        )
+        points = origin + indices * resolution
+        (occupied if tree.isNodeOccupied(leaf) else free).append(points)
+    return tuple(
+        np.concatenate(parts) if parts else np.empty((0, 3))
+        for parts in (occupied, free)
+    )
+
+
+def test_extract_matches_leaf_expansion(tree):
+    assert all(a.shape == (0, 3) for a in tree.extractPointCloud())
+    points = np.indices((4, 4, 4)).reshape(3, -1).T * 0.1 + 0.05
+    tree.updateNodes(points, True)
+    tree.updateNodes(points + 1, False)
+    tree.updateNode(np.array([-0.15, -0.25, -0.35]), True)
+    assert any(
+        leaf.getSize() > tree.getResolution() for leaf in tree.begin_leafs()
+    )
+    before = tree.write()
+    for actual, expected in zip(
+        tree.extractPointCloud(), reference_extract(tree)
+    ):
+        np.testing.assert_array_equal(actual, expected)
+        assert actual.dtype == np.float64
+    assert tree.write() == before
+    tree.setOccupancyThres(0.9)
+    for actual, expected in zip(
+        tree.extractPointCloud(), reference_extract(tree)
+    ):
+        np.testing.assert_array_equal(actual, expected)

@@ -72,6 +72,7 @@ add_custom_command(
   DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/octomap/octomap.pyx"
           "${CMAKE_CURRENT_SOURCE_DIR}/octomap/octomap_defs.pxd"
           "${CMAKE_CURRENT_SOURCE_DIR}/octomap/dynamicEDT3D_defs.pxd"
+          "${CMAKE_CURRENT_SOURCE_DIR}/octomap/include_and_setting.h"
   COMMENT "Cythonizing octomap.pyx"
   VERBATIM
 )

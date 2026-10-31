@@ -283,3 +283,7 @@ cdef extern from "include_and_setting.h" namespace "octomap":
         bool isNodeCollapsible(const ColorOcTreeNode* node)
         void deleteNodeChild(ColorOcTreeNode *node, unsigned int childIdx)
         bool pruneNode(ColorOcTreeNode *node)
+
+cdef extern from "include_and_setting.h" namespace "octomap_python":
+    void expandedPointCounts[T](T* tree, size_t& occupied, size_t& free) except +
+    void extractExpandedPoints[T](T* tree, double* occupied, double* free) except +

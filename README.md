@@ -94,12 +94,14 @@ octree.insertPointCloud(points, origin=[0, 0, 0])
 
 labels = octree.getLabels(points)  # int32: -1 unknown, 0 free, 1 occupied
 occupied_points = points[labels == 1]
+occupied, free = octree.extractPointCloud()  # float64 arrays, each (N, 3)
 ```
 
 Insertion rejects malformed, nonfinite, or out-of-bounds coordinates before
 changing the map. Each axis must be in `[-32768 * resolution, 32768 * resolution)`
 after float32 conversion. `getLabels` classifies nonfinite and out-of-bounds
-coordinates as unknown.
+coordinates as unknown. `extractPointCloud` expands pruned leaves into
+resolution-sized voxels, so its output can be much larger than the tree.
 
 ## Examples
 
