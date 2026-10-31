@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from typing import Any
 from typing import overload
 
+from numpy.typing import ArrayLike
 from numpy.typing import NDArray
 from typing_extensions import override
 
@@ -139,7 +140,7 @@ class OcTree(OccupancyOcTreeBase):
     def insertPointCloud(
         self,
         pointcloud: NDArray[Any],
-        origin: NDArray[Any],
+        origin: ArrayLike,
         maxrange: float = ...,
         lazy_eval: bool = ...,
         discretize: bool = ...,
@@ -204,6 +205,7 @@ class ColorOcTree(OccupancyOcTreeBase):
     def averageNodeColor(
         self, value: OcTreeKey | NDArray[Any], r: int, g: int, b: int
     ) -> ColorOcTreeNode: ...
+    def getLabels(self, points: NDArray[Any]) -> NDArray[Any]: ...
     def integrateNodeColor(
         self, value: OcTreeKey | NDArray[Any], r: int, g: int, b: int
     ) -> ColorOcTreeNode: ...
@@ -235,7 +237,7 @@ class ColorOcTree(OccupancyOcTreeBase):
     def insertPointCloud(
         self,
         pointcloud: NDArray[Any],
-        origin: NDArray[Any],
+        origin: ArrayLike,
         maxrange: float = ...,
         lazy_eval: bool = ...,
         discretize: bool = ...,

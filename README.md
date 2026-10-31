@@ -80,6 +80,27 @@ octree.write("tree.ot")
 restored = octomap.ColorOcTree.read("tree.ot")
 ```
 
+## Batch operations
+
+`OcTree` and `ColorOcTree` accept `(N, 3)` float32 or float64 point arrays
+for `insertPointCloud` and `getLabels`, including strided and read-only arrays.
+The bindings avoid a NumPy dtype copy; insertion still copies coordinates into
+OctoMap's float32 point cloud.
+
+```python
+points = np.array([[1, 0, 0], [0, 1, 0]], dtype=np.float32)
+octree = octomap.OcTree(0.1)
+octree.insertPointCloud(points, origin=[0, 0, 0])
+
+labels = octree.getLabels(points)  # int32: -1 unknown, 0 free, 1 occupied
+occupied_points = points[labels == 1]
+```
+
+Insertion rejects malformed, nonfinite, or out-of-bounds coordinates before
+changing the map. Each axis must be in `[-32768 * resolution, 32768 * resolution)`
+after float32 conversion. `getLabels` classifies nonfinite and out-of-bounds
+coordinates as unknown.
+
 ## Examples
 
 Runnable demos live in [`examples/`](examples). `pointcloud_to_octree.py`

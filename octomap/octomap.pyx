@@ -2,6 +2,7 @@ from libcpp.string cimport string
 from libcpp cimport bool as cppbool
 from libc.string cimport memcpy
 from libc.math cimport NAN, isnan
+from cython cimport boundscheck, wraparound
 from cython.operator cimport dereference as deref, preincrement as inc, address
 cimport octomap_defs as defs
 cimport dynamicEDT3D_defs as edt
@@ -13,6 +14,70 @@ ctypedef np.float64_t DOUBLE_t
 ctypedef defs.OccupancyOcTreeBase[defs.OcTreeNode].tree_iterator* tree_iterator_ptr
 ctypedef defs.OccupancyOcTreeBase[defs.OcTreeNode].leaf_iterator* leaf_iterator_ptr
 ctypedef defs.OccupancyOcTreeBase[defs.OcTreeNode].leaf_bbx_iterator* leaf_bbx_iterator_ptr
+
+ctypedef fused FLOAT_t:
+    np.float32_t
+    np.float64_t
+
+ctypedef fused Tree_t:
+    defs.OcTree
+    defs.ColorOcTree
+
+cdef void _check_points(const FLOAT_t[:, :] points) except *:
+    if points is None or points.shape[1] != 3:
+        raise ValueError("points must have shape (N, 3)")
+
+
+@boundscheck(False)
+@wraparound(False)
+cdef void _fill_pointcloud(const FLOAT_t[:, :] points, double limit,
+                            defs.Pointcloud& pc) except *:
+    _check_points(points)
+    cdef Py_ssize_t i
+    cdef float x, y, z
+    pc.reserve(points.shape[0])
+    for i in range(points.shape[0]):
+        x, y, z = points[i, 0], points[i, 1], points[i, 2]
+        if not (-limit <= x < limit and -limit <= y < limit and -limit <= z < limit):
+            raise ValueError("points must be finite and within the octree bounds")
+        pc.push_back(x, y, z)
+
+
+cdef defs.point3d _origin(origin, double limit) except *:
+    cdef np.ndarray[DOUBLE_t, ndim=1] values = np.asarray(origin, dtype=np.float64)
+    if values.shape[0] != 3 or not np.isfinite(values).all():
+        raise ValueError("origin must have shape (3,) and finite coordinates")
+    cdef defs.point3d result = defs.point3d(values[0], values[1], values[2])
+    if not (-limit <= result.x() < limit and
+            -limit <= result.y() < limit and
+            -limit <= result.z() < limit):
+        raise ValueError("origin must be finite and within the octree bounds")
+    return result
+
+
+@boundscheck(False)
+@wraparound(False)
+cdef _labels(Tree_t* tree, const FLOAT_t[:, :] points):
+    _check_points(points)
+    cdef np.ndarray[np.int32_t, ndim=1] labels = np.full(points.shape[0], -1, dtype=np.int32)
+    cdef Py_ssize_t i
+    cdef defs.point3d point
+    cdef defs.OcTreeKey key
+    cdef defs.OcTreeNode* node
+    cdef double limit = tree.getResolution() * 32768
+    for i in range(points.shape[0]):
+        point = defs.point3d(points[i, 0], points[i, 1], points[i, 2])
+        # Guard native coordinate-to-integer conversion, including overflow.
+        if not (-limit <= point.x() < limit and
+                -limit <= point.y() < limit and
+                -limit <= point.z() < limit):
+            continue
+        if tree.coordToKeyChecked(point, key):
+            node = tree.search(key, 0)
+            if node != NULL:
+                labels[i] = tree.isNodeOccupied(deref(node))
+    return labels
+
 
 class NullPointerException(Exception):
     """
@@ -733,22 +798,13 @@ cdef class OcTree(OccupancyOcTreeBase):
 
     read = _octree_read
 
-    def getLabels(self, np.ndarray[DOUBLE_t, ndim=2] points):
-        cdef int i
-        cdef np.ndarray[DOUBLE_t, ndim=1] pt
-        cdef OcTreeKey key
-        cdef OcTreeNode node
-        # -1: unknown, 0: empty, 1: occupied
-        cdef np.ndarray[np.int32_t, ndim=1] labels = \
-            np.full((points.shape[0],), -1, dtype=np.int32)
-        for i, pt in enumerate(points):
-            key = self.coordToKey(pt)
-            node = self.search(key)
-            try:
-                labels[i] = self.isNodeOccupied(node)
-            except NullPointerException:
-                pass
-        return labels
+    def getLabels(self, const FLOAT_t[:, :] points):
+        """Classify (N, 3) float32/float64 points: -1 unknown, 0 free, 1 occupied.
+
+        Strided and read-only buffers are accepted without copying. Nonfinite
+        and out-of-bounds coordinates are unknown.
+        """
+        return _labels(self._tree(), points)
 
     def extractPointCloud(self):
         cdef float resolution = self.getResolution()
@@ -792,13 +848,17 @@ cdef class OcTree(OccupancyOcTreeBase):
         return occupied_arr, empty_arr
 
     def insertPointCloud(self,
-                         np.ndarray[DOUBLE_t, ndim=2] pointcloud,
-                         np.ndarray[DOUBLE_t, ndim=1] origin,
+                         const FLOAT_t[:, :] pointcloud,
+                         origin,
                          maxrange=-1.,
                          lazy_eval=False,
                          discretize=False):
         """
-        Integrate a Pointcloud (in global reference frame), parallelized with OpenMP.
+        Integrate a point cloud in the global reference frame.
+
+        Accepts (N, 3) float32/float64 buffers, including strided and read-only
+        arrays, without a NumPy dtype copy. OctoMap stores its own float32 copy.
+        Points and origin must be finite and within the octree bounds.
 
         Special care is taken that each voxel in the map is updated only once, and occupied
         nodes have a preference over free ones. This avoids holes in the floor from mutual
@@ -809,19 +869,12 @@ cdef class OcTree(OccupancyOcTreeBase):
         :param : whether update of inner nodes is omitted after the update (default: false).
         This speeds up the insertion, but you need to call updateInnerOccupancy() when done.
         """
-        cdef defs.Pointcloud pc = defs.Pointcloud()
-        for p in pointcloud:
-            pc.push_back(<float>p[0],
-                         <float>p[1],
-                         <float>p[2])
-
-        self._tree().insertPointCloud(pc,
-                                      defs.Vector3(<float>origin[0],
-                                                   <float>origin[1],
-                                                   <float>origin[2]),
-                                      <double?>maxrange,
-                                      bool(lazy_eval),
-                                      bool(discretize))
+        cdef double limit = self.thisptr.getResolution() * 32768
+        cdef defs.point3d sensor_origin = _origin(origin, limit)
+        cdef defs.Pointcloud pc
+        _fill_pointcloud(pointcloud, limit, pc)
+        self._tree().insertPointCloud(pc, sensor_origin, <double?>maxrange,
+                                      bool(lazy_eval), bool(discretize))
 
     def begin_tree(self, maxDepth=0):
         itr = tree_iterator()
@@ -1207,21 +1260,22 @@ cdef class ColorOcTree(OccupancyOcTreeBase):
         return hit
 
     def insertPointCloud(self,
-                         np.ndarray[DOUBLE_t, ndim=2] pointcloud,
-                         np.ndarray[DOUBLE_t, ndim=1] origin,
+                         const FLOAT_t[:, :] pointcloud,
+                         origin,
                          maxrange=-1.,
                          lazy_eval=False,
                          discretize=False):
-        cdef defs.Pointcloud pc = defs.Pointcloud()
-        for p in pointcloud:
-            pc.push_back(<float>p[0], <float>p[1], <float>p[2])
-        self._tree().insertPointCloud(pc,
-                                      defs.Vector3(<float>origin[0],
-                                                   <float>origin[1],
-                                                   <float>origin[2]),
-                                      <double?>maxrange,
-                                      bool(lazy_eval),
-                                      bool(discretize))
+        """Insert a float32/float64 scan; see OcTree.insertPointCloud."""
+        cdef double limit = self.thisptr.getResolution() * 32768
+        cdef defs.point3d sensor_origin = _origin(origin, limit)
+        cdef defs.Pointcloud pc
+        _fill_pointcloud(pointcloud, limit, pc)
+        self._tree().insertPointCloud(pc, sensor_origin, <double?>maxrange,
+                                      bool(lazy_eval), bool(discretize))
+
+    def getLabels(self, const FLOAT_t[:, :] points):
+        """Classify points as -1 unknown, 0 free, or 1 occupied; see OcTree.getLabels."""
+        return _labels(self._tree(), points)
 
     # The iterator factories reuse the shared tree_iterator / leaf_iterator /
     # leaf_bbx_iterator wrappers. OccupancyOcTreeBase<ColorOcTreeNode>'s

@@ -38,7 +38,8 @@ cdef extern from "octomap/octomap_types.h" namespace "octomap":
 cdef extern from "octomap/Pointcloud.h" namespace "octomap":
     cdef cppclass Pointcloud:
         Pointcloud() except +
-        void push_back(float, float, float)
+        void reserve(size_t size) except +
+        void push_back(float, float, float) except +
         void push_back(point3d* p)
 
 cdef extern from "octomap/OcTreeNode.h" namespace "octomap":
